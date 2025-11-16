@@ -634,7 +634,7 @@ Complete implementation delivered! 🎉
 
 **Prompt**:
 
-> I've added clients/agentic-reversing-labs/code/sha256-hasher/e2e/mock/large-file.mkv, can you make the test so that it works with any file extension?
+> I've added sha256-hasher/e2e/mock/large-file.mkv, can you make the test so that it works with any file extension?
 
 **Response**:
 
@@ -831,6 +831,7 @@ Now fixed! ✨
 **Current Problems**:
 
 1. **Multiple Worker Instances**:
+
    - `useHashWorker` hook called in EVERY component that needs worker
    - Each call creates a NEW worker instance
    - ComputeButton has its own worker
@@ -838,6 +839,7 @@ Now fixed! ✨
    - Result: Cancel button terminates wrong worker ❌
 
 2. **No Isolation**:
+
    - All components share global Zustand store
    - Multiple widgets on same page would share state
    - Can't have two independent hash computations ❌
@@ -859,17 +861,20 @@ Current (BROKEN):
 ```
 
 **The Root Cause**:
+
 - Using global Zustand store = all components share state
 - But worker is in React hook closure = each component gets own worker
 - State is shared, workers are not = architectural mismatch!
 
 **Why Two Widgets Won't Work**:
+
 ```tsx
 <HashWidget />  // Uses global store
 <HashWidget />  // Same global store! State collision ❌
 ```
 
 **Conclusion**: Need complete architectural refactor to support:
+
 - Single worker per widget instance
 - Isolated state per widget instance
 - Reusable widget component
@@ -895,12 +900,16 @@ Use Zustand's **vanilla store API** + internal React Context to create isolated 
 ```typescript
 // 1. Store Factory (creates NEW instance per widget)
 export function createHashStore() {
-  let worker: Worker | null = null;  // Isolated in closure!
-  
+  let worker: Worker | null = null; // Isolated in closure!
+
   return createStore<HashState>((set, get) => ({
     // Each store gets its own worker
-    initWorker: () => { /* ... */ },
-    cancel: () => { worker?.terminate(); },
+    initWorker: () => {
+      /* ... */
+    },
+    cancel: () => {
+      worker?.terminate();
+    },
     // ... all state and actions
   }));
 }
@@ -910,11 +919,11 @@ const HashWidgetContext = createContext<HashStore>();
 
 export function HashWidgetProvider({ children }) {
   const storeRef = useRef<HashStore>();
-  
+
   if (!storeRef.current) {
-    storeRef.current = createHashStore();  // New instance!
+    storeRef.current = createHashStore(); // New instance!
   }
-  
+
   return (
     <HashWidgetContext.Provider value={storeRef.current}>
       {children}
@@ -925,7 +934,9 @@ export function HashWidgetProvider({ children }) {
 // 3. Self-Contained Widget
 export function HashWidget() {
   return (
-    <HashWidgetProvider>  {/* Context INSIDE widget! */}
+    <HashWidgetProvider>
+      {" "}
+      {/* Context INSIDE widget! */}
       <div>
         <ComputeButton />
         <CancelButton />
@@ -937,11 +948,13 @@ export function HashWidget() {
 ```
 
 **Key Innovation**:
+
 - Context is **internal** to the widget
 - Consumers never see the provider
 - Just use `<HashWidget />` - it handles everything!
 
 **Benefits**:
+
 - ✅ No global state pollution
 - ✅ Each widget completely isolated
 - ✅ Developers can't forget provider wrapping
@@ -950,6 +963,7 @@ export function HashWidget() {
 - ✅ Multiple widgets on same page work independently
 
 **Usage**:
+
 ```tsx
 // Just import and use - no setup!
 <HashWidget />  // Instance 1 (own state + worker)
@@ -957,6 +971,7 @@ export function HashWidget() {
 ```
 
 **Created Files**:
+
 1. `hash-widget.store.ts` - Store factory with worker
 2. `hash-widget.context.tsx` - Internal context provider
 3. `hash-widget.tsx` - Self-contained widget component
@@ -1011,12 +1026,14 @@ features/hash-computation/
 ```
 
 **Changes**:
+
 - ✅ Moved ALL widget-related code into `widgets/hash-widget/`
 - ✅ Updated all import paths
 - ✅ Removed old duplicate files
 - ✅ Page is now minimal - just imports `HashWidget`
 
 **Benefits**:
+
 - ✅ Crystal clear organization - everything widget-related in one place
 - ✅ Easy to find any widget code
 - ✅ Can copy entire `hash-widget` folder to reuse elsewhere
@@ -1031,7 +1048,7 @@ Test Results: All 25 tests passing ✅
 
 **Prompt**:
 
-> move clients/agentic-reversing-labs/code/sha256-hasher/src/features/hash-computation/widgets/hash-widget/hash-widget.context.tsx and clients/agentic-reversing-labs/code/sha256-hasher/src/features/hash-computation/widgets/hash-widget/hash-widget.store.ts to clients/agentic-reversing-labs/code/sha256-hasher/src/features/hash-computation/widgets/hash-widget/state
+> move hash-widget.context.tsx and hash-widget.store.ts to widgets/hash-widget/state folder
 
 **Response**:
 
@@ -1067,7 +1084,7 @@ Test Results: All 25 tests passing ✅
 
 **Prompt**:
 
-> update clients/agentic-reversing-labs/code/sha256-hasher/src/features/hash-computation/widgets/hash-widget/README.md
+> update widgets/hash-widget/README.md
 
 **Response**:
 
