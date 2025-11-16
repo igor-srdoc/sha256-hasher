@@ -19,16 +19,16 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
       // Read chunk
       const chunk = file.slice(offset, offset + chunkSize);
       const arrayBuffer = await chunk.arrayBuffer();
-      
+
       // Convert ArrayBuffer to WordArray for crypto-js
       const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer as any);
-      
+
       // Update hash with chunk
       sha256.update(wordArray);
-      
+
       // Update offset
       offset += chunkSize;
-      
+
       // Calculate and send progress (only if changed by at least 1%)
       const progress = Math.min(Math.round((offset / fileSize) * 100), 100);
       if (progress !== lastProgressSent && progress % 1 === 0) {
@@ -60,4 +60,3 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
 };
 
 export {};
-

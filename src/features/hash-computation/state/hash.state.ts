@@ -51,4 +51,3 @@ export const useHashState = create<HashState>((set) => ({
       description: "",
     }),
 }));
-

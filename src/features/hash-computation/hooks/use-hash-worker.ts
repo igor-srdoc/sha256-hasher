@@ -5,7 +5,8 @@ import { MESSAGES } from "../hash-computation.const";
 
 export function useHashWorker() {
   const workerRef = useRef<Worker | null>(null);
-  const { setProgress, setResult, setError, file, description } = useHashState();
+  const { setProgress, setResult, setError, file, description } =
+    useHashState();
 
   useEffect(() => {
     // Initialize worker
@@ -53,4 +54,3 @@ export function useHashWorker() {
 
   return workerRef;
 }
-

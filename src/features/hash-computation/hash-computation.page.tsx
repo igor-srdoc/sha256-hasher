@@ -7,7 +7,7 @@ import { ErrorDisplay } from "./ui/error-display";
 
 /**
  * Hash Computation Page - Layout Component
- * 
+ *
  * This is a pure layout component using the widget pattern.
  * Each child component (widget) manages its own state via Zustand.
  * No props are passed - widgets read/write to global state directly.
@@ -24,4 +24,3 @@ export default function HashComputationPage() {
     </div>
   );
 }
-

@@ -12,7 +12,7 @@ function App() {
             Calculate SHA256 hash for files up to 10GB
           </p>
         </div>
-        
+
         <HashComputationPage />
       </div>
     </div>
@@ -20,4 +20,3 @@ function App() {
 }
 
 export default App;
-

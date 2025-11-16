@@ -25,12 +25,12 @@ describe("FileUploader", () => {
 
   it("shows file info after selection", () => {
     const file = new File(["content"], "test.txt", { type: "text/plain" });
-    
+
     render(<FileUploader />);
     const input = screen.getByLabelText(/drop file here/i);
-    
+
     fireEvent.change(input, { target: { files: [file] } });
-    
+
     const state = useHashState.getState();
     expect(state.file).toBeTruthy();
     expect(state.file?.name).toBe("test.txt");
@@ -43,10 +43,10 @@ describe("FileUploader", () => {
     Object.defineProperty(largeFile, "size", {
       value: MAX_FILE_SIZE_BYTES + 1,
     });
-    
+
     render(<FileUploader />);
     const input = screen.getByLabelText(/drop file here/i);
-    
+
     fireEvent.change(input, { target: { files: [largeFile] } });
 
     const state = useHashState.getState();

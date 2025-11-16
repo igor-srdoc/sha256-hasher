@@ -7,7 +7,7 @@ export function ComputeButton() {
   const { file, status, setStatus, setError } = useHashState();
   const workerRef = useHashWorker();
 
-  // Only show when file is selected and not computing/completed
+  // Only show when file is selected and in idle or error state
   if (!file || status === "computing" || status === "completed") {
     return null;
   }
@@ -34,7 +34,6 @@ export function ComputeButton() {
     <Button
       onClick={handleCompute}
       className="w-full"
-      disabled={status === "computing"}
     >
       Compute SHA256 Hash
     </Button>

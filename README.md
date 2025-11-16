@@ -92,14 +92,14 @@ The application can handle files up to 10GB without loading them entirely into m
 ```
 Main Thread (UI)          Web Worker (Background)
 ─────────────            ──────────────────────
-FileUploader              
-    │                         
-    ├─> Select File           
-    │                         
-DescriptionInput              
-    │                         
-ComputeButton                 
-    │                         
+FileUploader
+    │
+    ├─> Select File
+    │
+DescriptionInput
+    │
+ComputeButton
+    │
     ├─────────────────────> Start Hashing
                                │
 ProgressBar                    ├─> Read 64MB chunk
@@ -108,7 +108,7 @@ ProgressBar                    ├─> Read 64MB chunk
     │                          ├─> Read next chunk
     │<─────────────────────    ├─> Send progress (10%)
     │                          └─> ... repeat ...
-ResultsDisplay                 
+ResultsDisplay
     │<─────────────────────    Final Hash
 ```
 
