@@ -18,6 +18,7 @@ export function createHashStore() {
     error: null,
     result: null,
     description: "",
+    descriptionWasFocused: false,
 
     // Actions
     setFile: (file) =>
@@ -30,6 +31,8 @@ export function createHashStore() {
       }),
 
     setDescription: (description) => set({ description }),
+
+    setDescriptionFocused: (focused) => set({ descriptionWasFocused: focused }),
 
     setStatus: (status) => set({ status }),
 
@@ -58,6 +61,7 @@ export function createHashStore() {
         error: null,
         result: null,
         description: "",
+        descriptionWasFocused: false,
       }),
 
     cancel: () => {

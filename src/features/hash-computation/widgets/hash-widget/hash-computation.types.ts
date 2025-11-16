@@ -22,10 +22,12 @@ export interface HashState {
 
   // User input
   description: string;
+  descriptionWasFocused: boolean; // Track if user was typing in description
 
   // Actions
   setFile: (file: File | null) => void;
   setDescription: (description: string) => void;
+  setDescriptionFocused: (focused: boolean) => void;
   setStatus: (status: HashStatus) => void;
   setProgress: (progress: number) => void;
   setResult: (result: HashResult) => void;

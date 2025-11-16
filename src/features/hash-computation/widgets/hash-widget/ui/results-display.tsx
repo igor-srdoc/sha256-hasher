@@ -1,18 +1,33 @@
 import { Copy, CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@ui/button";
+import { Textarea } from "@ui/textarea";
+import { Label } from "@ui/label";
 import { useHashWidgetStore, useHashWidgetActions } from "../state/hash-widget.context";
 import { formatBytes } from "../utils/format-bytes";
-import { MESSAGES } from "../hash-computation.const";
+import { MESSAGES, MAX_DESCRIPTION_LENGTH } from "../hash-computation.const";
 
 export function ResultsDisplay() {
   const result = useHashWidgetStore((state) => state.result);
   const status = useHashWidgetStore((state) => state.status);
-  const { reset } = useHashWidgetActions();
+  const description = useHashWidgetStore((state) => state.description);
+  const descriptionWasFocused = useHashWidgetStore((state) => state.descriptionWasFocused);
+  const { reset, setDescription } = useHashWidgetActions();
   const [copied, setCopied] = useState(false);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
   // Only show when completed
   if (status !== "completed" || !result) return null;
+
+  // Auto-focus description field if user was typing when computation completed
+  useEffect(() => {
+    if (descriptionWasFocused && descriptionRef.current) {
+      descriptionRef.current.focus();
+      // Move cursor to end of text
+      const length = descriptionRef.current.value.length;
+      descriptionRef.current.setSelectionRange(length, length);
+    }
+  }, [descriptionWasFocused]);
 
   const handleCopy = async () => {
     try {
@@ -23,6 +38,15 @@ export function ResultsDisplay() {
       console.error("Failed to copy:", error);
     }
   };
+
+  const handleDescriptionChange = (value: string) => {
+    // Enforce character limit
+    if (value.length <= MAX_DESCRIPTION_LENGTH) {
+      setDescription(value);
+    }
+  };
+
+  const remaining = MAX_DESCRIPTION_LENGTH - description.length;
 
   return (
     <div className="space-y-4">
@@ -75,12 +99,23 @@ export function ResultsDisplay() {
             </div>
           </div>
 
-          {result.description && (
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Description:</p>
-              <p className="text-sm text-gray-900">{result.description}</p>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="result-description">
+              Description (Optional)
+            </Label>
+            <Textarea
+              id="result-description"
+              ref={descriptionRef}
+              value={description}
+              onChange={(e) => handleDescriptionChange(e.target.value)}
+              placeholder="Add a description for this file..."
+              rows={3}
+              className="resize-none bg-white"
+            />
+            <p className="text-sm text-gray-500 text-right">
+              {remaining} characters remaining
+            </p>
+          </div>
 
           <div className="text-xs text-gray-500">
             Computed at: {result.computedAt.toLocaleString()}
