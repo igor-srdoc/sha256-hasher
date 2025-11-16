@@ -2,8 +2,8 @@ import { Copy, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@ui/button";
 import { useHashWidgetStore, useHashWidgetActions } from "../hash-widget.context";
-import { formatBytes } from "../../utils/format-bytes";
-import { MESSAGES } from "../../hash-computation.const";
+import { formatBytes } from "../utils/format-bytes";
+import { MESSAGES } from "../hash-computation.const";
 
 export function ResultsDisplay() {
   const result = useHashWidgetStore((state) => state.result);

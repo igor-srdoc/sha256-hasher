@@ -47,7 +47,7 @@ export function createHashStore() {
       }
       return worker;
     },
-    
+
     cancel: () => {
       worker?.terminate();
       worker = null;
@@ -299,7 +299,7 @@ export function createHashStore() {
       }
       return worker;
     },
-    
+
     cancel: () => {
       worker?.terminate();  // Terminate THIS worker only
       worker = null;
@@ -332,7 +332,7 @@ interface HashWidgetProps {
   onComplete?: (hash: string) => void;
 }
 
-export function HashWidget({ 
+export function HashWidget({
   maxFileSize = 10 * GB,
   allowedFileTypes = ["*"],
   onComplete,
@@ -363,11 +363,11 @@ export function HashWidget({
 
 The **Isolated Zustand Instance Pattern** gives us:
 
-✅ **Zustand** power (simple, performant state management)  
-✅ **Context** isolation (each widget independent)  
-✅ **Zero setup** for consumers (just import and use)  
-✅ **Type safety** (full TypeScript support)  
-✅ **Scalability** (unlimited widgets per page)  
+✅ **Zustand** power (simple, performant state management)
+✅ **Context** isolation (each widget independent)
+✅ **Zero setup** for consumers (just import and use)
+✅ **Type safety** (full TypeScript support)
+✅ **Scalability** (unlimited widgets per page)
 
 Perfect for reusable components that need their own state! 🎉
 

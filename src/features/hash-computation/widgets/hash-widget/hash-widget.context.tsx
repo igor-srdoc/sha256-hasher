@@ -1,7 +1,13 @@
-import { createContext, useContext, useRef, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useRef,
+  useEffect,
+  type ReactNode,
+} from "react";
 import { useStore } from "zustand";
 import { createHashStore, type HashStore } from "./hash-widget.store";
-import type { HashState } from "../hash-computation.types";
+import type { HashState } from "./hash-computation.types";
 
 /**
  * Internal context for HashWidget - NOT exposed to consumers.
@@ -39,15 +45,13 @@ export function HashWidgetProvider({ children }: { children: ReactNode }) {
  * Hook to access this widget's store.
  * Can only be used within HashWidget components.
  */
-export function useHashWidgetStore<T>(
-  selector: (state: HashState) => T
-): T {
+export function useHashWidgetStore<T>(selector: (state: HashState) => T): T {
   const store = useContext(HashWidgetContext);
-  
+
   if (!store) {
     throw new Error(
       "useHashWidgetStore must be used within HashWidget. " +
-      "This is an internal error - HashWidget should provide its own context."
+        "This is an internal error - HashWidget should provide its own context."
     );
   }
 
@@ -59,14 +63,13 @@ export function useHashWidgetStore<T>(
  */
 export function useHashWidgetActions() {
   const store = useContext(HashWidgetContext);
-  
+
   if (!store) {
     throw new Error(
       "useHashWidgetActions must be used within HashWidget. " +
-      "This is an internal error - HashWidget should provide its own context."
+        "This is an internal error - HashWidget should provide its own context."
     );
   }
 
   return store.getState();
 }
-

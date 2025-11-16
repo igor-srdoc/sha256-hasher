@@ -1,11 +1,11 @@
 import { Button } from "@ui/button";
-import { useHashState } from "../state/hash.state";
-import { useHashWorker } from "../hooks/use-hash-worker";
+import { useHashWidgetStore, useHashWidgetActions } from "../hash-widget.context";
 import { CHUNK_SIZE, MESSAGES } from "../hash-computation.const";
 
 export function ComputeButton() {
-  const { file, status, setStatus, setError } = useHashState();
-  const workerRef = useHashWorker();
+  const file = useHashWidgetStore((state) => state.file);
+  const status = useHashWidgetStore((state) => state.status);
+  const { setStatus, setError, initWorker } = useHashWidgetActions();
 
   // Only show when file is selected and in idle or error state
   if (!file || status === "computing" || status === "completed") {
@@ -20,21 +20,19 @@ export function ComputeButton() {
 
     setStatus("computing");
 
+    // Get or create worker for this widget instance
+    const worker = initWorker!();
+
     // Send message to worker
-    if (workerRef.current) {
-      workerRef.current.postMessage({
-        type: "COMPUTE_HASH",
-        file,
-        chunkSize: CHUNK_SIZE,
-      });
-    }
+    worker.postMessage({
+      type: "COMPUTE_HASH",
+      file,
+      chunkSize: CHUNK_SIZE,
+    });
   };
 
   return (
-    <Button
-      onClick={handleCompute}
-      className="w-full"
-    >
+    <Button onClick={handleCompute} className="w-full">
       Compute SHA256 Hash
     </Button>
   );

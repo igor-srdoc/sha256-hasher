@@ -9,17 +9,17 @@ import { ErrorDisplay } from "./ui/error-display";
 
 /**
  * HashWidget - A fully self-contained, reusable hash computation component.
- * 
+ *
  * Features:
  * - Each instance has its own isolated state and Web Worker
  * - Multiple widgets can exist on the same page independently
  * - No global state pollution
  * - No provider wrapping required by consumers
- * 
+ *
  * Usage:
  * ```tsx
  * import { HashWidget } from "@/features/hash-computation/widgets/hash-widget";
- * 
+ *
  * function MyPage() {
  *   return (
  *     <div>
@@ -45,4 +45,3 @@ export function HashWidget() {
     </HashWidgetProvider>
   );
 }
-

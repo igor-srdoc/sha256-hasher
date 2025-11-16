@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { Upload } from "lucide-react";
 import { useHashWidgetStore, useHashWidgetActions } from "../hash-widget.context";
-import { validateFile } from "../../utils/validate-file";
-import { formatBytes } from "../../utils/format-bytes";
+import { validateFile } from "../utils/validate-file";
+import { formatBytes } from "../utils/format-bytes";
 
 export function FileUploader() {
   const file = useHashWidgetStore((state) => state.file);

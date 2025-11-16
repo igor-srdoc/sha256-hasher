@@ -38,4 +38,3 @@ export interface HashState {
   getWorker?: () => Worker | null;
   cleanupWorker?: () => void;
 }
-
