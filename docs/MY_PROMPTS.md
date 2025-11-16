@@ -813,3 +813,148 @@ useEffect(() => {
 This bug violated the core requirement: **"UI must remain non-blocking during computation"**
 
 Now fixed! ✨
+
+---
+
+## 28. Move State Files into state/ Folder
+
+**Prompt**:
+
+> move clients/agentic-reversing-labs/code/sha256-hasher/src/features/hash-computation/widgets/hash-widget/hash-widget.context.tsx and clients/agentic-reversing-labs/code/sha256-hasher/src/features/hash-computation/widgets/hash-widget/hash-widget.store.ts to clients/agentic-reversing-labs/code/sha256-hasher/src/features/hash-computation/widgets/hash-widget/state
+
+**Response**:
+
+✅ **State Files Organized!**
+
+**Reorganization**:
+- Moved `hash-widget.context.tsx` → `state/hash-widget.context.tsx`
+- Moved `hash-widget.store.ts` → `state/hash-widget.store.ts`
+- All three state management files now co-located in `state/` folder:
+  - `hash.state.ts` (original global store for tests)
+  - `hash-widget.context.tsx` (React Context provider)
+  - `hash-widget.store.ts` (Zustand store factory)
+
+**Changes**:
+- Updated 9 import paths across all UI components
+- Updated 3 internal imports in context and store files
+- All imports now point to `../state/hash-widget.context`
+
+**Benefits**:
+- Logical grouping of all state-related code
+- Clear separation of concerns
+- Easier to understand state architecture
+- Follows common pattern: `state/` for state management
+
+Test Results: All 25 tests passing ✅
+
+---
+
+## 29. Update Widget README
+
+**Prompt**:
+
+> update clients/agentic-reversing-labs/code/sha256-hasher/src/features/hash-computation/widgets/hash-widget/README.md
+
+**Response**:
+
+📚 **README Updated!**
+
+Updated the HashWidget README to reflect the new folder structure:
+- ✅ Updated file structure diagram to show `state/` folder
+- ✅ Updated all code examples with correct import paths
+- ✅ Added complete folder tree showing all subfolders
+- ✅ Enhanced testing section with integration test example
+- ✅ More detailed worker management code example
+- ✅ Clarified relationship between `hash.state.ts` (global) and `hash-widget.store.ts` (isolated)
+
+The README now accurately reflects the current architecture with state files properly organized.
+
+---
+
+## 30. Move Page Heading to Hash Page
+
+**Prompt**:
+
+> move from hash widget to hash page:
+>
+> SHA256 File Hasher
+>
+> Calculate SHA256 hash for files up to 10GB
+
+**Response**:
+
+✅ **Heading Moved to Page Level!**
+
+**Changes**:
+1. Moved heading and description from `app.tsx` to `hash-computation.page.tsx`
+2. Simplified `app.tsx` to just render the page component
+3. Added gradient background and centered layout to page
+
+**Architecture**:
+
+Before:
+```
+app.tsx → heading + description → HashComputationPage → HashWidget
+```
+
+After:
+```
+app.tsx → HashComputationPage (with heading + description) → HashWidget
+```
+
+**Benefits**:
+- ✅ Cleaner separation of concerns
+- ✅ Page is self-contained with its own header
+- ✅ App.tsx is minimal (just renders the page)
+- ✅ HashWidget remains a pure reusable component
+- ✅ Easier to add more pages in the future
+
+Fixed strict mode violation (duplicate heading). All 14 E2E tests passing ✅
+
+---
+
+## 31. Extract Layout Component
+
+**Prompt**:
+
+> move this from hash page into layout.tsx in src/app/layout/
+>
+> `<div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4">`
+>
+> and use in app.tsx
+
+**Response**:
+
+✅ **Layout Component Created!**
+
+**New Structure**:
+- Created `src/app/layout/layout.tsx` - Reusable layout wrapper
+- Moved outer layout wrapper from hash page to Layout component
+- Updated `app.tsx` to use Layout component
+- Hash page now only contains page-specific content
+
+**Architecture**:
+
+Before:
+```
+app.tsx → HashComputationPage → <div min-h-screen bg-gradient...> → Content
+```
+
+After:
+```
+app.tsx → Layout (structure) → HashComputationPage (content only)
+```
+
+**Layout Component Provides**:
+- Full-height viewport (`min-h-screen`)
+- Gradient background (`from-gray-50 to-gray-100`)
+- Consistent padding (`py-12 px-4`)
+
+**Benefits**:
+- ✅ Reusable layout for future pages
+- ✅ Consistent styling across all pages
+- ✅ Clean separation: Layout = structure, Page = content
+- ✅ Easy to modify app-wide styling in one place
+- ✅ Pages focus only on their specific content
+
+Test Results: All 14 E2E tests passing ✅
