@@ -466,6 +466,7 @@ Complete implementation delivered! 🎉
 ## 21. Browser Runtime Error: Fix Tailwind CSS and Add E2E Tests
 
 **Prompt**:
+
 > the app is still failing in the Browser. add e2e tests and always run them before commiting. fix errors as you see then through e2e tests with playwright
 
 **Response**:
@@ -473,6 +474,7 @@ Complete implementation delivered! 🎉
 Complete fix delivered! 🎉
 
 **1. Critical Tailwind CSS Bug Identified**:
+
 - Error: `Cannot apply unknown utility class 'bg-background'`
 - Cause: Tailwind v4 doesn't support `@apply` with CSS variable utilities
 - Fix: Changed from `@apply bg-background text-foreground` to direct CSS:
@@ -482,11 +484,13 @@ Complete fix delivered! 🎉
   ```
 
 **2. TypeScript Compilation Errors Fixed**:
+
 - Removed type mismatch in `ComputeButton` (`status === "computing"` check when status is `"idle" | "error"`)
 - Cleaned up unused `expect` import in test setup
 - ✅ All TypeScript errors resolved
 
 **3. E2E Test Suite Implemented** (8 comprehensive tests):
+
 - ✅ loads the application successfully
 - ✅ shows file info after selection
 - ✅ computes hash for small text file
@@ -497,6 +501,7 @@ Complete fix delivered! 🎉
 - ✅ validates visual styling (green hash, monospace font)
 
 **4. Test Results**:
+
 - Unit Tests: 21/21 passing ✅
 - E2E Tests: 8/8 passing ✅
 - Build: Successful ✅
@@ -507,16 +512,19 @@ Complete fix delivered! 🎉
 ## 22. Playwright Config: Disable HTML Report
 
 **Prompt**:
+
 > don't serve the html report when running e2e tests, just fix errors as you see them
 
 **Response**:
 
 **Playwright Configuration Updated**:
+
 - Changed `reporter: "html"` to `reporter: "list"` for clean CLI output
 - Added `webServer` config to auto-start dev server for tests
 - Tests now run cleanly without serving HTML report
 
 **Test Fixes Applied**:
+
 - Fixed file size regex selector (was matching page description text)
 - Changed from `/\d+(\.\d+)?\s*(Bytes|KB|MB)/` to `/^\d+(\.\d+)?\s*(Bytes|KB|MB)$/`
 - Simplified "UI remains responsive" test to focus on actual responsiveness (button clicks work, description saved, can retry)
@@ -528,6 +536,7 @@ Complete fix delivered! 🎉
 ## 23. Vitest Watch Mode Issue
 
 **Prompt**:
+
 > you seem to be getting stuck and waiting for a long time when running e2e tests
 
 **Response**:
@@ -535,14 +544,22 @@ Complete fix delivered! 🎉
 **Issue Identified**: Vitest was running in watch mode, waiting for input
 
 **Fixes Applied**:
+
 1. Updated `vitest.config.ts` to exclude `e2e/` directory
+
    ```typescript
-   exclude: ["**/node_modules/**", "**/dist/**", "**/e2e/**", "**/playwright-report/**"]
+   exclude: [
+     "**/node_modules/**",
+     "**/dist/**",
+     "**/e2e/**",
+     "**/playwright-report/**",
+   ];
    ```
 
 2. Used `pnpm vitest run` instead of `pnpm test --run` for non-watch mode
 
 **Final Test Execution**:
+
 - Unit Tests: `pnpm vitest run` → 21/21 passing (845ms) ✅
 - E2E Tests: `pnpm test:e2e` → 8/8 passing (1.9s) ✅
 - No hanging, no watch mode ✅

@@ -219,5 +219,72 @@ test.describe("SHA256 Hash Computation E2E", () => {
     });
     expect(fontFamily.toLowerCase()).toMatch(/mono|courier|consolas/);
   });
+
+  test("allows canceling computation", async ({ page }) => {
+    // Create a larger file so we have time to cancel
+    const largeContent = "X".repeat(5 * 1024 * 1024); // 5MB
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    
+    await page.getByText(/Drop file here or click to select/i).click();
+    
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles({
+      name: "large-cancel.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(largeContent),
+    });
+
+    // Start computation
+    await page.getByRole("button", { name: /Compute SHA256 Hash/i }).click();
+
+    // Wait for computation to start
+    await expect(page.getByText(/Computing hash/i)).toBeVisible();
+
+    // Click cancel button
+    await page.getByRole("button", { name: /Cancel/i }).click();
+
+    // Should be back to idle state with file still selected
+    await expect(page.getByText("large-cancel.txt")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Compute SHA256 Hash/i })).toBeVisible();
+    
+    // Progress bar should be gone
+    await expect(page.getByText(/Computing hash/i)).not.toBeVisible();
+  });
+
+  test("handles large files efficiently", async ({ page }) => {
+    // Test with a 10MB file (smaller than 700MB but large enough to test chunking)
+    const largeContent = "L".repeat(10 * 1024 * 1024); // 10MB
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    
+    await page.getByText(/Drop file here or click to select/i).click();
+    
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles({
+      name: "large-10mb.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(largeContent),
+    });
+
+    // Verify file size is displayed
+    await expect(page.getByText("large-10mb.txt")).toBeVisible();
+    await expect(page.getByText(/10(\.\d+)?\s*MB/)).toBeVisible();
+
+    // Start computation
+    await page.getByRole("button", { name: /Compute SHA256 Hash/i }).click();
+
+    // Check for progress indicator
+    await expect(page.getByText(/Computing hash/i)).toBeVisible();
+
+    // Wait for completion (allow more time for 10MB)
+    await expect(page.getByText(/Hash computed successfully/i), {
+      timeout: 30000,
+    }).toBeVisible();
+
+    // Verify hash is computed
+    const hashElement = page.locator("code").first();
+    await expect(hashElement).toBeVisible();
+    const hashText = await hashElement.textContent();
+    expect(hashText?.length).toBe(64); // SHA256 is 64 hex chars
+  });
 });
 

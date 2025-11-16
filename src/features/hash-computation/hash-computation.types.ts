@@ -31,5 +31,6 @@ export interface HashState {
   setResult: (result: HashResult) => void;
   setError: (error: string) => void;
   reset: () => void;
+  cancel: () => void;
 }
 

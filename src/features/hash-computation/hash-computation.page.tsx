@@ -1,6 +1,7 @@
 import { FileUploader } from "./ui/file-uploader";
 import { DescriptionInput } from "./ui/description-input";
 import { ComputeButton } from "./ui/compute-button";
+import { CancelButton } from "./ui/cancel-button";
 import { ProgressBar } from "./ui/progress-bar";
 import { ResultsDisplay } from "./ui/results-display";
 import { ErrorDisplay } from "./ui/error-display";
@@ -18,6 +19,7 @@ export default function HashComputationPage() {
       <FileUploader />
       <DescriptionInput />
       <ComputeButton />
+      <CancelButton />
       <ProgressBar />
       <ResultsDisplay />
       <ErrorDisplay />

@@ -50,4 +50,11 @@ export const useHashState = create<HashState>((set) => ({
       result: null,
       description: "",
     }),
+
+  cancel: () =>
+    set({
+      status: "idle",
+      progress: 0,
+      error: null,
+    }),
 }));
