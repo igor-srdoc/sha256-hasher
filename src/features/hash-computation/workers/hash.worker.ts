@@ -21,7 +21,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
     while (offset < fileSize) {
       chunkNumber++;
       const chunkStart = Date.now();
-      
+
       // Read chunk
       console.log(`[Worker] Reading chunk ${chunkNumber} at offset ${offset}...`);
       const chunk = file.slice(offset, offset + chunkSize);
@@ -52,7 +52,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
         self.postMessage(progressMessage);
         lastProgressSent = progress;
       }
-      
+
       console.log(`[Worker] Total time for chunk ${chunkNumber}: ${Date.now() - chunkStart}ms`);
     }
 

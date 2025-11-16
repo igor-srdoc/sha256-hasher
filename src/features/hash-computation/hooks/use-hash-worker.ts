@@ -5,8 +5,7 @@ import { MESSAGES } from "../hash-computation.const";
 
 export function useHashWorker() {
   const workerRef = useRef<Worker | null>(null);
-  const { setProgress, setResult, setError, file, description } =
-    useHashState();
+  const { setProgress, setResult, setError } = useHashState();
 
   useEffect(() => {
     // Initialize worker
@@ -24,7 +23,9 @@ export function useHashWorker() {
           setProgress(message.progress);
           break;
 
-        case "RESULT":
+        case "RESULT": {
+          // Get current state values at the time of completion
+          const { file, description } = useHashState.getState();
           setResult({
             hash: message.hash,
             fileName: file?.name || "",
@@ -33,6 +34,7 @@ export function useHashWorker() {
             computedAt: new Date(),
           });
           break;
+        }
 
         case "ERROR":
           setError(message.error || MESSAGES.ERRORS.COMPUTATION_FAILED);
@@ -50,7 +52,7 @@ export function useHashWorker() {
     return () => {
       workerRef.current?.terminate();
     };
-  }, [setProgress, setResult, setError, file, description]);
+  }, [setProgress, setResult, setError]);
 
   return workerRef;
 }

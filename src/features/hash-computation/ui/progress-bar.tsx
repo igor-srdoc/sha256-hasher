@@ -46,7 +46,7 @@ export function ProgressBar() {
         <span className="font-medium text-gray-900">{progress}%</span>
       </div>
       <Progress value={progress} />
-      
+
       {/* Verbose status */}
       <div className="text-xs text-gray-500 space-y-1">
         <p>Processing chunk {currentChunk} of {estimatedChunks} (64MB chunks)</p>

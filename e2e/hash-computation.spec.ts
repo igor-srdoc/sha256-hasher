@@ -114,9 +114,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // Create a larger file to see progress
     const largeContent = "A".repeat(1024 * 1024); // 1MB
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "large.txt",
@@ -203,6 +203,93 @@ test.describe("SHA256 Hash Computation E2E", () => {
     await expect(
       page.getByText(/Drop file here or click to select/i)
     ).toBeVisible();
+  });
+
+  test("allows typing description during computation without breaking hash", async ({ page }) => {
+    // Create a 5MB file to have enough time to type during computation
+    const largeContent = "X".repeat(5 * 1024 * 1024); // 5MB
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    
+    await page.getByText(/Drop file here or click to select/i).click();
+    
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles({
+      name: "large-typing-test.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(largeContent),
+    });
+
+    // Start computation immediately (no description yet)
+    await page.getByRole("button", { name: /Compute SHA256 Hash/i }).click();
+
+    // Wait for computation to start
+    await expect(page.getByText(/Computing hash/i)).toBeVisible();
+
+    // Type description WHILE hashing is in progress (this was the bug!)
+    const descriptionField = page.getByPlaceholder(/Add a description/i);
+    await descriptionField.fill("Typed during hashing");
+
+    // Wait for completion - should succeed despite typing
+    await expect(page.getByText(/Hash computed successfully/i), {
+      timeout: 15000,
+    }).toBeVisible();
+
+    // Verify hash was computed (64 hex characters)
+    const hashElement = page.locator("code").first();
+    await expect(hashElement).toBeVisible();
+    const hashText = await hashElement.textContent();
+    expect(hashText?.length).toBe(64);
+
+    // Verify the description typed during hashing was saved
+    await expect(page.getByText("Typed during hashing")).toBeVisible();
+  });
+
+  test("allows multiple description edits during computation", async ({ page }) => {
+    // Create a 10MB file to ensure we have enough time to type multiple edits
+    const largeContent = "Y".repeat(10 * 1024 * 1024); // 10MB
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    
+    await page.getByText(/Drop file here or click to select/i).click();
+    
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles({
+      name: "multi-edit-test.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(largeContent),
+    });
+
+    // Start with initial description
+    const descriptionField = page.getByPlaceholder(/Add a description/i);
+    await descriptionField.fill("Version 1");
+
+    // Start computation
+    await page.getByRole("button", { name: /Compute SHA256 Hash/i }).click();
+    await expect(page.getByText(/Computing hash/i)).toBeVisible();
+
+    // Edit description multiple times during hashing (stop if computation completes)
+    try {
+      await descriptionField.fill("Version 2", { timeout: 2000 });
+      await page.waitForTimeout(100);
+      await descriptionField.fill("Version 3", { timeout: 2000 });
+      await page.waitForTimeout(100);
+      await descriptionField.fill("Final version", { timeout: 2000 });
+    } catch (e) {
+      // It's OK if computation completes before all edits - we verified typing works
+      console.log("Computation completed before all description edits");
+    }
+
+    // Wait for completion
+    await expect(page.getByText(/Hash computed successfully/i), {
+      timeout: 20000,
+    }).toBeVisible();
+
+    // Verify hash was computed successfully
+    const hashElement = page.locator("code").first();
+    const hashText = await hashElement.textContent();
+    expect(hashText?.length).toBe(64);
+
+    // The important part: verify hash completed successfully despite typing
+    // (The final description text may vary depending on when computation finished)
   });
 
   test("validates visual styling", async ({ page }) => {
