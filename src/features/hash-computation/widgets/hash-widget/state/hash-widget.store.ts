@@ -1,7 +1,7 @@
 import { createStore } from "zustand/vanilla";
-import type { HashState } from "./hash-computation.types";
-import type { WorkerResponse } from "./workers/hash.worker.types";
-import { MESSAGES } from "./hash-computation.const";
+import type { HashState } from "../hash-computation.types";
+import type { WorkerResponse } from "../workers/hash.worker.types";
+import { MESSAGES } from "../hash-computation.const";
 
 /**
  * Factory function to create isolated hash computation store instances.
@@ -78,7 +78,7 @@ export function createHashStore() {
       if (worker) return worker;
 
       worker = new Worker(
-        new URL("./workers/hash.worker.ts", import.meta.url),
+        new URL("../workers/hash.worker.ts", import.meta.url),
         { type: "module" }
       );
 
@@ -132,4 +132,3 @@ export function createHashStore() {
 }
 
 export type HashStore = ReturnType<typeof createHashStore>;
-

@@ -1,5 +1,5 @@
 import { Button } from "@ui/button";
-import { useHashWidgetStore, useHashWidgetActions } from "../hash-widget.context";
+import { useHashWidgetStore, useHashWidgetActions } from "../state/hash-widget.context";
 import { CHUNK_SIZE, MESSAGES } from "../hash-computation.const";
 
 export function ComputeButton() {

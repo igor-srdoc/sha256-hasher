@@ -1,5 +1,5 @@
 import { Button } from "@ui/button";
-import { useHashWidgetStore, useHashWidgetActions } from "../hash-widget.context";
+import { useHashWidgetStore, useHashWidgetActions } from "../state/hash-widget.context";
 
 export function CancelButton() {
   const status = useHashWidgetStore((state) => state.status);

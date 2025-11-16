@@ -1,4 +1,4 @@
-import { HashWidgetProvider } from "./hash-widget.context";
+import { HashWidgetProvider } from "./state/hash-widget.context";
 import { FileUploader } from "./ui/file-uploader";
 import { DescriptionInput } from "./ui/description-input";
 import { ComputeButton } from "./ui/compute-button";

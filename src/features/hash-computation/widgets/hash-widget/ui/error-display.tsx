@@ -1,6 +1,6 @@
 import { AlertCircle } from "lucide-react";
 import { Button } from "@ui/button";
-import { useHashWidgetStore, useHashWidgetActions } from "../hash-widget.context";
+import { useHashWidgetStore, useHashWidgetActions } from "../state/hash-widget.context";
 
 export function ErrorDisplay() {
   const error = useHashWidgetStore((state) => state.error);

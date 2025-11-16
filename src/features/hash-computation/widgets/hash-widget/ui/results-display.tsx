@@ -1,7 +1,7 @@
 import { Copy, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@ui/button";
-import { useHashWidgetStore, useHashWidgetActions } from "../hash-widget.context";
+import { useHashWidgetStore, useHashWidgetActions } from "../state/hash-widget.context";
 import { formatBytes } from "../utils/format-bytes";
 import { MESSAGES } from "../hash-computation.const";
 

@@ -1,5 +1,5 @@
 import { Progress } from "@ui/progress";
-import { useHashWidgetStore } from "../hash-widget.context";
+import { useHashWidgetStore } from "../state/hash-widget.context";
 import { useEffect, useState } from "react";
 
 export function ProgressBar() {

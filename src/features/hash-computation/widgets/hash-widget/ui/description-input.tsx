@@ -1,6 +1,6 @@
 import { Textarea } from "@ui/textarea";
 import { Label } from "@ui/label";
-import { useHashWidgetStore, useHashWidgetActions } from "../hash-widget.context";
+import { useHashWidgetStore, useHashWidgetActions } from "../state/hash-widget.context";
 import { MAX_DESCRIPTION_LENGTH } from "../hash-computation.const";
 
 export function DescriptionInput() {

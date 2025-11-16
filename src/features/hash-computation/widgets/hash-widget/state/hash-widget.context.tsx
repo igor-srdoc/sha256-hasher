@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useStore } from "zustand";
 import { createHashStore, type HashStore } from "./hash-widget.store";
-import type { HashState } from "./hash-computation.types";
+import type { HashState } from "../hash-computation.types";
 
 /**
  * Internal context for HashWidget - NOT exposed to consumers.

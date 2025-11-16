@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Upload } from "lucide-react";
-import { useHashWidgetStore, useHashWidgetActions } from "../hash-widget.context";
+import { useHashWidgetStore, useHashWidgetActions } from "../state/hash-widget.context";
 import { validateFile } from "../utils/validate-file";
 import { formatBytes } from "../utils/format-bytes";
 
