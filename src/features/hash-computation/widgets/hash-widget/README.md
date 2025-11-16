@@ -9,23 +9,35 @@ The `HashWidget` is a fully self-contained, reusable component that demonstrates
 ### Key Components
 
 ```
-widgets/
-├── hash-widget.tsx          # Main widget component (entry point)
-├── hash-widget.store.ts     # Zustand store factory (creates isolated instances)
-├── hash-widget.context.tsx  # Internal context provider (NOT for consumers)
-└── ui/                      # Widget-specific UI components
-    ├── compute-button.tsx
-    ├── cancel-button.tsx
-    ├── file-uploader.tsx
-    ├── description-input.tsx
-    ├── progress-bar.tsx
-    ├── results-display.tsx
-    └── error-display.tsx
+widgets/hash-widget/
+├── hash-widget.tsx                   # Main widget component (entry point)
+├── hash-computation.types.ts         # TypeScript types
+├── hash-computation.const.ts         # Constants
+├── state/                            # State management
+│   ├── hash.state.ts                # Original global store (for tests)
+│   ├── hash-widget.store.ts         # Zustand store factory
+│   └── hash-widget.context.tsx      # Internal context provider
+├── ui/                               # Widget-specific UI components
+│   ├── compute-button.tsx
+│   ├── cancel-button.tsx
+│   ├── file-uploader.tsx
+│   ├── description-input.tsx
+│   ├── progress-bar.tsx
+│   ├── results-display.tsx
+│   └── error-display.tsx
+├── utils/                            # Utility functions
+│   ├── format-bytes.ts
+│   └── validate-file.ts
+├── workers/                          # Web Workers
+│   ├── hash.worker.ts
+│   └── hash.worker.types.ts
+└── hooks/                            # Custom hooks (legacy)
+    └── use-hash-worker.ts
 ```
 
 ### How It Works
 
-#### 1. **Store Factory** (`hash-widget.store.ts`)
+#### 1. **Store Factory** (`state/hash-widget.store.ts`)
 
 Creates a new Zustand vanilla store instance per widget:
 
@@ -61,7 +73,7 @@ export function createHashStore() {
 
 **Key Insight**: Each store has its **own** `worker` variable in closure scope, ensuring complete isolation.
 
-#### 2. **Internal Context Provider** (`hash-widget.context.tsx`)
+#### 2. **Internal Context Provider** (`state/hash-widget.context.tsx`)
 
 Provides the store instance only within the widget:
 
@@ -94,6 +106,10 @@ export function HashWidgetProvider({ children }: { children: ReactNode }) {
 Self-contained component that wraps everything:
 
 ```typescript
+import { HashWidgetProvider } from "./state/hash-widget.context";
+import { FileUploader } from "./ui/file-uploader";
+// ... other imports
+
 export function HashWidget() {
   return (
     <HashWidgetProvider>  {/* Context only here */}
@@ -111,9 +127,11 @@ export function HashWidget() {
 
 #### 4. **UI Components** (e.g., `compute-button.tsx`)
 
-Access the widget's store via custom hooks:
+Access the widget's store via custom hooks from the context:
 
 ```typescript
+import { useHashWidgetStore, useHashWidgetActions } from "../state/hash-widget.context";
+
 export function ComputeButton() {
   const file = useHashWidgetStore((state) => state.file);
   const status = useHashWidgetStore((state) => state.status);
@@ -135,7 +153,7 @@ export function ComputeButton() {
 ### Single Widget
 
 ```tsx
-import { HashWidget } from "@/features/hash-computation/widgets/hash-widget";
+import { HashWidget } from "@/features/hash-computation/widgets/hash-widget/hash-widget";
 
 function MyPage() {
   return (
@@ -150,7 +168,7 @@ function MyPage() {
 ### Multiple Independent Widgets
 
 ```tsx
-import { HashWidget } from "@/features/hash-computation/widgets/hash-widget";
+import { HashWidget } from "@/features/hash-computation/widgets/hash-widget/hash-widget";
 
 function MultiHashPage() {
   return (
@@ -228,10 +246,10 @@ Developers can't forget to wrap components because the provider is **internal** 
 
 ## How It Differs from Global Zustand
 
-**Global Zustand** (original approach):
+**Global Zustand** (original approach in `state/hash.state.ts`):
 
 ```typescript
-// Single global store
+// Single global store - still kept for backward compatibility with tests
 export const useHashState = create<HashState>((set) => ({ ... }));
 
 // Problem: All components share the SAME state
@@ -239,41 +257,67 @@ export const useHashState = create<HashState>((set) => ({ ... }));
 <HashWidget />  // Can't have multiple instances
 ```
 
-**Isolated Zustand** (this approach):
+**Isolated Zustand** (this approach in `state/hash-widget.store.ts`):
 
 ```typescript
 // Factory creates NEW store per widget
 export function createHashStore() {
-  return createStore<HashState>((set) => ({ ... }));
+  let worker: Worker | null = null;  // Isolated per store
+  
+  return createStore<HashState>((set) => ({ 
+    // ... state and actions
+  }));
 }
 
 // Solution: Each widget gets its OWN store + worker
-<HashWidget />  // Own store
-<HashWidget />  // Different store
+<HashWidget />  // Own store instance
+<HashWidget />  // Different store instance
 ```
 
 ## Testing
 
-Unit tests still work with the original global store (unchanged):
+### Unit Tests
+
+Unit tests can use the original global store for simplicity:
 
 ```typescript
 import { useHashState } from "../state/hash.state";
 
-describe("FileUploader", () => {
-  it("works", () => {
-    const { setFile } = useHashState.getState();
-    setFile(mockFile);
-    // ... test
+describe("Utility Functions", () => {
+  it("formats bytes correctly", () => {
+    expect(formatBytes(1024)).toBe("1 KB");
   });
 });
 ```
 
-E2E tests work because the widget is self-contained:
+### Integration Tests (if needed)
+
+For component tests that need state, you can wrap in `HashWidgetProvider`:
+
+```typescript
+import { HashWidgetProvider } from "../state/hash-widget.context";
+import { render } from "@testing-library/react";
+
+describe("ComputeButton", () => {
+  it("renders", () => {
+    render(
+      <HashWidgetProvider>
+        <ComputeButton />
+      </HashWidgetProvider>
+    );
+  });
+});
+```
+
+### E2E Tests
+
+E2E tests work seamlessly because the widget is self-contained:
 
 ```typescript
 test("handles file upload", async ({ page }) => {
   // Widget auto-initializes its own store
   await page.goto("/");
+  await page.getByText(/Drop file here/).click();
   // ... interact with page
 });
 ```
@@ -282,16 +326,21 @@ test("handles file upload", async ({ page }) => {
 
 ### Worker Management
 
-Each store encapsulates its own worker:
+Each store encapsulates its own worker in `state/hash-widget.store.ts`:
 
 ```typescript
 export function createHashStore() {
-  let worker: Worker | null = null;  // Closure scope - isolated!
+  let worker: Worker | null = null;  // Closure scope - isolated per store!
 
   return createStore<HashState>((set, get) => ({
+    // ... state
+    
     initWorker: () => {
       if (!worker) {
-        worker = new Worker(...);
+        worker = new Worker(
+          new URL("../workers/hash.worker.ts", import.meta.url),
+          { type: "module" }
+        );
         worker.onmessage = (event) => {
           // Update THIS store only
           get().setProgress(event.data.progress);
@@ -299,9 +348,15 @@ export function createHashStore() {
       }
       return worker;
     },
-
+    
     cancel: () => {
       worker?.terminate();  // Terminate THIS worker only
+      worker = null;
+      set({ status: "idle", progress: 0, error: null });
+    },
+    
+    cleanupWorker: () => {
+      worker?.terminate();
       worker = null;
     },
   }));
