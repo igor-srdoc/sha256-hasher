@@ -82,12 +82,12 @@ export function HashWidgetProvider({ children }: { children: ReactNode }) {
   const storeRef = useRef<HashStore>();
 
   if (!storeRef.current) {
-    storeRef.current = createHashStore();  // Create once per widget
+    storeRef.current = createHashStore(); // Create once per widget
   }
 
   useEffect(() => {
     return () => {
-      storeRef.current?.getState().cleanupWorker?.();  // Cleanup on unmount
+      storeRef.current?.getState().cleanupWorker?.(); // Cleanup on unmount
     };
   }, []);
 
@@ -112,7 +112,9 @@ import { FileUploader } from "./ui/file-uploader";
 
 export function HashWidget() {
   return (
-    <HashWidgetProvider>  {/* Context only here */}
+    <HashWidgetProvider>
+      {" "}
+      {/* Context only here */}
       <div className="bg-white rounded-lg shadow-lg p-8 space-y-6">
         <FileUploader />
         <DescriptionInput />
@@ -175,11 +177,11 @@ function MultiHashPage() {
     <div className="grid grid-cols-2 gap-4">
       <div>
         <h2>Widget 1</h2>
-        <HashWidget />  {/* Own state + worker */}
+        <HashWidget /> {/* Own state + worker */}
       </div>
       <div>
         <h2>Widget 2</h2>
-        <HashWidget />  {/* Completely independent! */}
+        <HashWidget /> {/* Completely independent! */}
       </div>
     </div>
   );
@@ -187,6 +189,7 @@ function MultiHashPage() {
 ```
 
 **Each widget:**
+
 - ✅ Has its own isolated state
 - ✅ Has its own Web Worker
 - ✅ Operates completely independently
@@ -220,6 +223,7 @@ Each operates independently - no shared state or workers!
 ### 3. **Proper Cleanup**
 
 When a widget unmounts:
+
 - Worker is terminated
 - State is cleaned up
 - No memory leaks
@@ -228,8 +232,8 @@ When a widget unmounts:
 
 ```typescript
 // Full TypeScript support
-const file = useHashWidgetStore((state) => state.file);  // File | null
-const { initWorker } = useHashWidgetActions();           // () => Worker
+const file = useHashWidgetStore((state) => state.file); // File | null
+const { initWorker } = useHashWidgetActions(); // () => Worker
 ```
 
 ### 5. **No Provider Hell**
@@ -238,11 +242,11 @@ Developers can't forget to wrap components because the provider is **internal** 
 
 ## Comparison with Other Patterns
 
-| Pattern | Pros | Cons |
-|---------|------|------|
-| **Global Zustand** | Simple | Can't have multiple instances |
-| **React Context** | Standard | Easy to forget provider wrapping |
-| **Isolated Zustand** (this) | ✅ Best of both worlds | Slightly more complex setup |
+| Pattern                     | Pros                   | Cons                             |
+| --------------------------- | ---------------------- | -------------------------------- |
+| **Global Zustand**          | Simple                 | Can't have multiple instances    |
+| **React Context**           | Standard               | Easy to forget provider wrapping |
+| **Isolated Zustand** (this) | ✅ Best of both worlds | Slightly more complex setup      |
 
 ## How It Differs from Global Zustand
 
@@ -263,8 +267,8 @@ export const useHashState = create<HashState>((set) => ({ ... }));
 // Factory creates NEW store per widget
 export function createHashStore() {
   let worker: Worker | null = null;  // Isolated per store
-  
-  return createStore<HashState>((set) => ({ 
+
+  return createStore<HashState>((set) => ({
     // ... state and actions
   }));
 }
@@ -330,11 +334,11 @@ Each store encapsulates its own worker in `state/hash-widget.store.ts`:
 
 ```typescript
 export function createHashStore() {
-  let worker: Worker | null = null;  // Closure scope - isolated per store!
+  let worker: Worker | null = null; // Closure scope - isolated per store!
 
   return createStore<HashState>((set, get) => ({
     // ... state
-    
+
     initWorker: () => {
       if (!worker) {
         worker = new Worker(
@@ -348,13 +352,13 @@ export function createHashStore() {
       }
       return worker;
     },
-    
+
     cancel: () => {
-      worker?.terminate();  // Terminate THIS worker only
+      worker?.terminate(); // Terminate THIS worker only
       worker = null;
       set({ status: "idle", progress: 0, error: null });
     },
-    
+
     cleanupWorker: () => {
       worker?.terminate();
       worker = null;
@@ -425,4 +429,3 @@ The **Isolated Zustand Instance Pattern** gives us:
 ✅ **Scalability** (unlimited widgets per page)
 
 Perfect for reusable components that need their own state! 🎉
-
