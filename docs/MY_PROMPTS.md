@@ -394,6 +394,8 @@ These prompts demonstrate a systematic approach to creating and refining a profe
 
 ---
 
+# Implementation - ReversingLabs Coding Challenge
+
 ## 20. Implementation: Build the Complete Application
 
 **Prompt**:
