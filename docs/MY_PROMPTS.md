@@ -816,7 +816,218 @@ Now fixed! ✨
 
 ---
 
-## 28. Move State Files into state/ Folder
+# Architecture Refactoring - Isolated Widget Pattern
+
+## 28. Analyze Current Worker Architecture
+
+**Prompt**:
+
+> explain how does initi of hash worker work. check how many times it gets initialized, where is useHashWorker being used. sholdn't the compute button and cancel button both use the same workerRef? what if we were to have two hash widgets on the same page - would we be able to support that as two separate processes?
+
+**Response**:
+
+🔍 **Critical Architecture Flaw Discovered!**
+
+**Current Problems**:
+
+1. **Multiple Worker Instances**:
+   - `useHashWorker` hook called in EVERY component that needs worker
+   - Each call creates a NEW worker instance
+   - ComputeButton has its own worker
+   - CancelButton has its own worker (different instance!)
+   - Result: Cancel button terminates wrong worker ❌
+
+2. **No Isolation**:
+   - All components share global Zustand store
+   - Multiple widgets on same page would share state
+   - Can't have two independent hash computations ❌
+
+3. **Worker Lifecycle Issues**:
+   - Workers created but not properly shared
+   - Cancel functionality broken due to different `workerRef` instances
+   - Memory leaks from orphaned workers
+
+**Architectural Analysis**:
+
+```
+Current (BROKEN):
+  HashComputationPage
+    ├─ ComputeButton
+    │   └─ useHashWorker() → Worker #1 ✅ Does computation
+    └─ CancelButton
+        └─ useHashWorker() → Worker #2 ❌ Tries to cancel wrong worker!
+```
+
+**The Root Cause**:
+- Using global Zustand store = all components share state
+- But worker is in React hook closure = each component gets own worker
+- State is shared, workers are not = architectural mismatch!
+
+**Why Two Widgets Won't Work**:
+```tsx
+<HashWidget />  // Uses global store
+<HashWidget />  // Same global store! State collision ❌
+```
+
+**Conclusion**: Need complete architectural refactor to support:
+- Single worker per widget instance
+- Isolated state per widget instance
+- Reusable widget component
+
+---
+
+## 29. Design Isolated Zustand Instance Pattern
+
+**Prompt**:
+
+> I'm not that keen on using react context because it can cause bugs by devs forgetting to properly wrap components with providers. let's change the architecture of the hash page and hash widget. we want to completely extract the hash widget as a reusable component which we can just import into hash page (or any other future page of this app). make a new folder features/hash-computation/widgets for the hash widget. try to still use zustand, but create a separate store instance for each hash widget. can we do that? can we effectively use zustand similarly to react context to have one per each instance of the widget?
+
+**Response**:
+
+✅ **Isolated Zustand Instance Pattern - Solution Designed!**
+
+**The Solution**:
+
+Use Zustand's **vanilla store API** + internal React Context to create isolated instances!
+
+**Architecture**:
+
+```typescript
+// 1. Store Factory (creates NEW instance per widget)
+export function createHashStore() {
+  let worker: Worker | null = null;  // Isolated in closure!
+  
+  return createStore<HashState>((set, get) => ({
+    // Each store gets its own worker
+    initWorker: () => { /* ... */ },
+    cancel: () => { worker?.terminate(); },
+    // ... all state and actions
+  }));
+}
+
+// 2. Internal Context (NOT exposed to consumers!)
+const HashWidgetContext = createContext<HashStore>();
+
+export function HashWidgetProvider({ children }) {
+  const storeRef = useRef<HashStore>();
+  
+  if (!storeRef.current) {
+    storeRef.current = createHashStore();  // New instance!
+  }
+  
+  return (
+    <HashWidgetContext.Provider value={storeRef.current}>
+      {children}
+    </HashWidgetContext.Provider>
+  );
+}
+
+// 3. Self-Contained Widget
+export function HashWidget() {
+  return (
+    <HashWidgetProvider>  {/* Context INSIDE widget! */}
+      <div>
+        <ComputeButton />
+        <CancelButton />
+        {/* ... */}
+      </div>
+    </HashWidgetProvider>
+  );
+}
+```
+
+**Key Innovation**:
+- Context is **internal** to the widget
+- Consumers never see the provider
+- Just use `<HashWidget />` - it handles everything!
+
+**Benefits**:
+- ✅ No global state pollution
+- ✅ Each widget completely isolated
+- ✅ Developers can't forget provider wrapping
+- ✅ Worker encapsulated in store closure
+- ✅ Cancel button works (same worker instance!)
+- ✅ Multiple widgets on same page work independently
+
+**Usage**:
+```tsx
+// Just import and use - no setup!
+<HashWidget />  // Instance 1 (own state + worker)
+<HashWidget />  // Instance 2 (completely independent!)
+```
+
+**Created Files**:
+1. `hash-widget.store.ts` - Store factory with worker
+2. `hash-widget.context.tsx` - Internal context provider
+3. `hash-widget.tsx` - Self-contained widget component
+4. `widgets/hash-widget/ui/*` - All UI components
+5. `widgets/hash-widget/README.md` - Architecture documentation
+
+All tests passing! ✅
+
+---
+
+## 30. Consolidate Widget Code
+
+**Prompt**:
+
+> create a hash-widget folder inside widgets folder. move all widget related folders and files from hash-computation folder into widgets/hash-widget. we should be left only with features/hash-computation/hash-computation.page.tsx in features/hash-computation and everyting else in features/hash-computation/widgets/hash-widget
+
+**Response**:
+
+✅ **Widget Code Consolidated into Single Folder!**
+
+**Final Structure**:
+
+```
+features/hash-computation/
+├── hash-computation.page.tsx  ← ONLY file at root (imports HashWidget)
+└── widgets/
+    └── hash-widget/           ← ALL widget code here
+        ├── README.md
+        ├── hash-widget.tsx
+        ├── hash-computation.types.ts
+        ├── hash-computation.const.ts
+        ├── state/
+        │   ├── hash.state.ts                (legacy global store)
+        │   ├── hash-widget.context.tsx      (internal context)
+        │   └── hash-widget.store.ts         (store factory)
+        ├── hooks/
+        │   └── use-hash-worker.ts
+        ├── utils/
+        │   ├── format-bytes.ts
+        │   └── validate-file.ts
+        ├── workers/
+        │   ├── hash.worker.ts
+        │   └── hash.worker.types.ts
+        └── ui/
+            ├── cancel-button.tsx
+            ├── compute-button.tsx
+            ├── description-input.tsx
+            ├── error-display.tsx
+            ├── file-uploader.tsx
+            ├── progress-bar.tsx
+            └── results-display.tsx
+```
+
+**Changes**:
+- ✅ Moved ALL widget-related code into `widgets/hash-widget/`
+- ✅ Updated all import paths
+- ✅ Removed old duplicate files
+- ✅ Page is now minimal - just imports `HashWidget`
+
+**Benefits**:
+- ✅ Crystal clear organization - everything widget-related in one place
+- ✅ Easy to find any widget code
+- ✅ Can copy entire `hash-widget` folder to reuse elsewhere
+- ✅ Page is minimal - just imports and renders widget
+- ✅ No confusion about widget vs page files
+
+Test Results: All 25 tests passing ✅
+
+---
+
+## 31. Move State Files into state/ Folder
 
 **Prompt**:
 
@@ -827,6 +1038,7 @@ Now fixed! ✨
 ✅ **State Files Organized!**
 
 **Reorganization**:
+
 - Moved `hash-widget.context.tsx` → `state/hash-widget.context.tsx`
 - Moved `hash-widget.store.ts` → `state/hash-widget.store.ts`
 - All three state management files now co-located in `state/` folder:
@@ -835,11 +1047,13 @@ Now fixed! ✨
   - `hash-widget.store.ts` (Zustand store factory)
 
 **Changes**:
+
 - Updated 9 import paths across all UI components
 - Updated 3 internal imports in context and store files
 - All imports now point to `../state/hash-widget.context`
 
 **Benefits**:
+
 - Logical grouping of all state-related code
 - Clear separation of concerns
 - Easier to understand state architecture
@@ -849,7 +1063,7 @@ Test Results: All 25 tests passing ✅
 
 ---
 
-## 29. Update Widget README
+## 32. Update Widget README
 
 **Prompt**:
 
@@ -860,6 +1074,7 @@ Test Results: All 25 tests passing ✅
 📚 **README Updated!**
 
 Updated the HashWidget README to reflect the new folder structure:
+
 - ✅ Updated file structure diagram to show `state/` folder
 - ✅ Updated all code examples with correct import paths
 - ✅ Added complete folder tree showing all subfolders
@@ -871,7 +1086,7 @@ The README now accurately reflects the current architecture with state files pro
 
 ---
 
-## 30. Move Page Heading to Hash Page
+## 33. Move Page Heading to Hash Page
 
 **Prompt**:
 
@@ -886,6 +1101,7 @@ The README now accurately reflects the current architecture with state files pro
 ✅ **Heading Moved to Page Level!**
 
 **Changes**:
+
 1. Moved heading and description from `app.tsx` to `hash-computation.page.tsx`
 2. Simplified `app.tsx` to just render the page component
 3. Added gradient background and centered layout to page
@@ -893,16 +1109,19 @@ The README now accurately reflects the current architecture with state files pro
 **Architecture**:
 
 Before:
+
 ```
 app.tsx → heading + description → HashComputationPage → HashWidget
 ```
 
 After:
+
 ```
 app.tsx → HashComputationPage (with heading + description) → HashWidget
 ```
 
 **Benefits**:
+
 - ✅ Cleaner separation of concerns
 - ✅ Page is self-contained with its own header
 - ✅ App.tsx is minimal (just renders the page)
@@ -913,7 +1132,7 @@ Fixed strict mode violation (duplicate heading). All 14 E2E tests passing ✅
 
 ---
 
-## 31. Extract Layout Component
+## 34. Extract Layout Component
 
 **Prompt**:
 
@@ -928,6 +1147,7 @@ Fixed strict mode violation (duplicate heading). All 14 E2E tests passing ✅
 ✅ **Layout Component Created!**
 
 **New Structure**:
+
 - Created `src/app/layout/layout.tsx` - Reusable layout wrapper
 - Moved outer layout wrapper from hash page to Layout component
 - Updated `app.tsx` to use Layout component
@@ -936,21 +1156,25 @@ Fixed strict mode violation (duplicate heading). All 14 E2E tests passing ✅
 **Architecture**:
 
 Before:
+
 ```
 app.tsx → HashComputationPage → <div min-h-screen bg-gradient...> → Content
 ```
 
 After:
+
 ```
 app.tsx → Layout (structure) → HashComputationPage (content only)
 ```
 
 **Layout Component Provides**:
+
 - Full-height viewport (`min-h-screen`)
 - Gradient background (`from-gray-50 to-gray-100`)
 - Consistent padding (`py-12 px-4`)
 
 **Benefits**:
+
 - ✅ Reusable layout for future pages
 - ✅ Consistent styling across all pages
 - ✅ Clean separation: Layout = structure, Page = content
