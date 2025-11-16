@@ -734,3 +734,81 @@ Added extensive logging to identify bottlenecks:
 - Each 64MB chunk takes ~1-3 seconds
 - 775MB = 13 chunks × 2s avg = ~26s total (expected!)
 - Progress updates every ~8% for 64MB chunks
+
+---
+
+## 27. Critical Bug Fix - Typing Description During Hashing
+
+**Prompt**:
+
+> I found the problem. hashing gets stuck when user enters a description while hashing is in progress. fix that and add case to tests
+
+**Response**:
+
+🐛 **Critical Bug Found and Fixed!** ✅
+
+**Root Cause Identified**:
+
+The `useHashWorker` hook had `description` (and `file`) in its `useEffect` dependency array. This meant:
+
+1. User types in description field → State updates
+2. `useEffect` sees dependency changed → Cleanup runs
+3. Cleanup calls `workerRef.current?.terminate()` → **Worker killed mid-computation!**
+4. New worker created but never told to start hashing → **Stuck forever**
+
+**The Fix**:
+
+```typescript
+// BEFORE (broken):
+useEffect(() => {
+  // Worker setup...
+}, [setProgress, setResult, setError, file, description]); // ❌ Worker restarts on every keystroke!
+
+// AFTER (fixed):
+useEffect(() => {
+  // Worker setup...
+  workerRef.current.onmessage = (event) => {
+    switch (message.type) {
+      case "RESULT": {
+        // Get current state at completion time
+        const { file, description } = useHashState.getState(); // ✅
+        setResult({ hash, fileName, fileSize, description, ... });
+      }
+    }
+  };
+}, [setProgress, setResult, setError]); // ✅ Worker persists!
+```
+
+**Test Coverage Added**:
+
+✅ **2 New E2E Tests** (14 total, all passing):
+
+1. **"allows typing description during computation without breaking hash"**:
+   - 5MB file
+   - Types description WHILE hashing
+   - Verifies hash completes successfully
+   - Verifies description is preserved
+
+2. **"allows multiple description edits during computation"**:
+   - 10MB file
+   - Edits description multiple times during hashing
+   - Handles case where computation finishes before all edits
+   - Verifies hash completes despite constant typing
+
+**Test Results**:
+
+- Unit Tests: 26/26 passing ✅
+- E2E Tests: 14/14 passing ✅ (12 original + 2 new)
+- Total: 40 tests passing ✅
+
+**Impact**:
+
+| Before Fix | After Fix |
+|------------|-----------|
+| Type 1 character → Worker terminated | Type freely → No impact |
+| Hash stuck at 8% forever | Hash completes normally |
+| Had to avoid typing during hash | Can edit description anytime |
+
+This bug violated the core requirement: **"UI must remain non-blocking during computation"**
+
+Now fixed! ✨
