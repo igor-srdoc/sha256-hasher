@@ -209,9 +209,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // Create a 5MB file to have enough time to type during computation
     const largeContent = "X".repeat(5 * 1024 * 1024); // 5MB
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "large-typing-test.txt",
@@ -248,9 +248,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // Create a 10MB file to ensure we have enough time to type multiple edits
     const largeContent = "Y".repeat(10 * 1024 * 1024); // 10MB
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "multi-edit-test.txt",

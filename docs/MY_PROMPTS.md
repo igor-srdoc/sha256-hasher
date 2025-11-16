@@ -784,6 +784,7 @@ useEffect(() => {
 ✅ **2 New E2E Tests** (14 total, all passing):
 
 1. **"allows typing description during computation without breaking hash"**:
+
    - 5MB file
    - Types description WHILE hashing
    - Verifies hash completes successfully
@@ -803,11 +804,11 @@ useEffect(() => {
 
 **Impact**:
 
-| Before Fix | After Fix |
-|------------|-----------|
-| Type 1 character → Worker terminated | Type freely → No impact |
-| Hash stuck at 8% forever | Hash completes normally |
-| Had to avoid typing during hash | Can edit description anytime |
+| Before Fix                           | After Fix                    |
+| ------------------------------------ | ---------------------------- |
+| Type 1 character → Worker terminated | Type freely → No impact      |
+| Hash stuck at 8% forever             | Hash completes normally      |
+| Had to avoid typing during hash      | Can edit description anytime |
 
 This bug violated the core requirement: **"UI must remain non-blocking during computation"**
 

@@ -32,5 +32,10 @@ export interface HashState {
   setError: (error: string) => void;
   reset: () => void;
   cancel: () => void;
+
+  // Worker management (internal)
+  initWorker?: () => Worker;
+  getWorker?: () => Worker | null;
+  cleanupWorker?: () => void;
 }
 
