@@ -23,6 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# E2E test mock files (large files for testing)
+e2e/mock/*
+!e2e/mock/.gitkeep
+
 # Test
 coverage
 test-results
