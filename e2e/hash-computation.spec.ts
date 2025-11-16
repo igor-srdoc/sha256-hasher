@@ -114,9 +114,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // Create a larger file to see progress
     const largeContent = "A".repeat(1024 * 1024); // 1MB
     const fileChooserPromise = page.waitForEvent("filechooser");
-
+    
     await page.getByText(/Drop file here or click to select/i).click();
-
+    
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "large.txt",
@@ -129,6 +129,10 @@ test.describe("SHA256 Hash Computation E2E", () => {
 
     // Check for progress indicator
     await expect(page.getByText(/Computing hash/i)).toBeVisible();
+
+    // Verify verbose status information is shown
+    await expect(page.getByText(/Processing chunk/i)).toBeVisible();
+    await expect(page.getByText(/File size:/i)).toBeVisible();
 
     // Wait for completion
     await expect(page.getByText(/Hash computed successfully/i), {

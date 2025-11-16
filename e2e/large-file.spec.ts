@@ -32,10 +32,10 @@ test.describe("Large File Real-World Testing", () => {
     // Check if file exists
     expect(LARGE_FILE_PATH).toBeTruthy();
     expect(fs.existsSync(LARGE_FILE_PATH!)).toBe(true);
-    
+
     const fileStats = fs.statSync(LARGE_FILE_PATH!);
     const fileSizeInMB = (fileStats.size / (1024 * 1024)).toFixed(2);
-    
+
     console.log(`Testing with ${LARGE_FILE_NAME}: ${fileSizeInMB}MB`);
 
     // Set up console error listener to catch any runtime errors
@@ -66,6 +66,10 @@ test.describe("Large File Real-World Testing", () => {
 
     // Wait for computation to start
     await expect(page.getByText(/Computing hash/i)).toBeVisible();
+
+    // Verify verbose status is shown
+    await expect(page.getByText(/Processing chunk/i)).toBeVisible();
+    await expect(page.getByText(/File size:/i)).toBeVisible();
 
     // Monitor progress updates - check that progress is actually increasing
     const progressUpdates: number[] = [];
