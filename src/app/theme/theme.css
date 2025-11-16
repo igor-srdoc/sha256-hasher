@@ -23,10 +23,6 @@
   --radius: 0.5rem;
 }
 
-* {
-  @apply border-border;
-}
-
 body {
   @apply bg-background text-foreground;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
