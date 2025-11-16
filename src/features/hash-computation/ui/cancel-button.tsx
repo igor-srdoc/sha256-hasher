@@ -21,7 +21,7 @@ export function CancelButton() {
         { type: "module" }
       );
     }
-    
+
     // Reset state to idle
     cancel();
   };

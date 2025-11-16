@@ -16,19 +16,23 @@ test.describe("SHA256 Hash Computation E2E", () => {
     await expect(page).toHaveTitle(/SHA256 File Hasher/);
 
     // Check main heading
-    await expect(page.getByRole("heading", { name: /SHA256 File Hasher/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /SHA256 File Hasher/i })
+    ).toBeVisible();
 
     // Check upload zone is visible
-    await expect(page.getByText(/Drop file here or click to select/i)).toBeVisible();
+    await expect(
+      page.getByText(/Drop file here or click to select/i)
+    ).toBeVisible();
   });
 
   test("shows file info after selection", async ({ page }) => {
     // Create a test file
     const testContent = "Hello, World! This is a test file.";
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "test.txt",
@@ -39,15 +43,17 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // Verify file info is displayed
     await expect(page.getByText("test.txt")).toBeVisible();
     // Use first() to get the first match (the file size, not the page description)
-    await expect(page.getByText(/^\d+(\.\d+)?\s*(Bytes|KB|MB|GB)$/)).toBeVisible();
+    await expect(
+      page.getByText(/^\d+(\.\d+)?\s*(Bytes|KB|MB|GB)$/)
+    ).toBeVisible();
   });
 
   test("computes hash for small text file", async ({ page }) => {
     const testContent = "Hello, World!";
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "test.txt",
@@ -69,7 +75,7 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // Verify hash is displayed
     const hashElement = page.locator("code").first();
     await expect(hashElement).toBeVisible();
-    
+
     // Hash should be 64 characters (SHA256)
     const hashText = await hashElement.textContent();
     expect(hashText?.length).toBe(64);
@@ -78,9 +84,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
   test("allows adding description before computation", async ({ page }) => {
     const testContent = "Test file content";
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "test.txt",
@@ -108,9 +114,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // Create a larger file to see progress
     const largeContent = "A".repeat(1024 * 1024); // 1MB
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "large.txt",
@@ -133,9 +139,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
   test("allows computing another hash after completion", async ({ page }) => {
     const testContent = "First file";
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "first.txt",
@@ -153,15 +159,17 @@ test.describe("SHA256 Hash Computation E2E", () => {
     await page.getByRole("button", { name: /Compute Another Hash/i }).click();
 
     // Verify we're back to upload state
-    await expect(page.getByText(/Drop file here or click to select/i)).toBeVisible();
+    await expect(
+      page.getByText(/Drop file here or click to select/i)
+    ).toBeVisible();
   });
 
   test("UI remains responsive during computation", async ({ page }) => {
     const smallContent = "Test".repeat(100); // Smaller file for faster test
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "test.txt",
@@ -180,23 +188,25 @@ test.describe("SHA256 Hash Computation E2E", () => {
     await expect(page.getByText(/Hash computed successfully/i), {
       timeout: 10000,
     }).toBeVisible();
-    
+
     // Verify the description was saved and is displayed in results
     await expect(page.getByText("Initial description")).toBeVisible();
-    
+
     // UI remains responsive - can click "Compute Another Hash"
     await page.getByRole("button", { name: /Compute Another Hash/i }).click();
-    
+
     // Should be back to upload state (UI responsive throughout)
-    await expect(page.getByText(/Drop file here or click to select/i)).toBeVisible();
+    await expect(
+      page.getByText(/Drop file here or click to select/i)
+    ).toBeVisible();
   });
 
   test("validates visual styling", async ({ page }) => {
     const testContent = "Styling test";
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "style-test.txt",
@@ -224,9 +234,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // Create a larger file so we have time to cancel
     const largeContent = "X".repeat(5 * 1024 * 1024); // 5MB
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "large-cancel.txt",
@@ -245,8 +255,10 @@ test.describe("SHA256 Hash Computation E2E", () => {
 
     // Should be back to idle state with file still selected
     await expect(page.getByText("large-cancel.txt")).toBeVisible();
-    await expect(page.getByRole("button", { name: /Compute SHA256 Hash/i })).toBeVisible();
-    
+    await expect(
+      page.getByRole("button", { name: /Compute SHA256 Hash/i })
+    ).toBeVisible();
+
     // Progress bar should be gone
     await expect(page.getByText(/Computing hash/i)).not.toBeVisible();
   });
@@ -255,9 +267,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // Test with a 10MB file (smaller than 700MB but large enough to test chunking)
     const largeContent = "L".repeat(10 * 1024 * 1024); // 10MB
     const fileChooserPromise = page.waitForEvent("filechooser");
-    
+
     await page.getByText(/Drop file here or click to select/i).click();
-    
+
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: "large-10mb.txt",
@@ -287,4 +299,3 @@ test.describe("SHA256 Hash Computation E2E", () => {
     expect(hashText?.length).toBe(64); // SHA256 is 64 hex chars
   });
 });
-

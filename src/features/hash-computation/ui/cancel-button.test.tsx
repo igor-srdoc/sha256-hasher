@@ -44,12 +44,12 @@ describe("CancelButton", () => {
   it("calls cancel when clicked", async () => {
     const user = userEvent.setup();
     useHashState.setState({ status: "computing", progress: 50 });
-    
+
     render(<CancelButton />);
     const button = screen.getByRole("button", { name: /cancel/i });
-    
+
     await user.click(button);
-    
+
     // After cancel, status should be idle
     const state = useHashState.getState();
     expect(state.status).toBe("idle");
