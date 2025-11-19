@@ -96,8 +96,14 @@ This E2E test demonstrates:
 
 ### Unit & Integration Tests
 
+The project includes comprehensive test coverage with **43 total tests**:
+
+- **Unit Tests (11)**: Utility functions (`format-bytes`, `validate-file`)
+- **Integration Tests (14)**: Widget components tested through full HashWidget
+- **E2E Tests (18)**: Complete application workflows
+
 ```bash
-# Run all unit tests
+# Run all unit & integration tests
 pnpm test
 
 # Run tests with UI
@@ -106,6 +112,8 @@ pnpm test:ui
 # Run tests with coverage
 pnpm test:coverage
 ```
+
+**Note**: Component tests are now integration tests because the widget uses isolated Zustand instances. Components are tested by rendering the full `HashWidget` and interacting with it.
 
 ### E2E Tests
 
@@ -198,9 +206,12 @@ src/
 │               │   └── validate-file.test.ts
 │               └── ui/
 │                   ├── file-uploader.tsx
+│                   ├── file-uploader.test.tsx
 │                   ├── description-input.tsx
+│                   ├── description-input.test.tsx
 │                   ├── compute-button.tsx
 │                   ├── cancel-button.tsx
+│                   ├── cancel-button.test.tsx
 │                   ├── progress-bar.tsx
 │                   ├── results-display.tsx
 │                   └── error-display.tsx
