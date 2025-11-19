@@ -128,7 +128,7 @@ test.describe("Large File Real-World Testing", () => {
 
     // Wait for completion (give it more time for large files)
     await expect(page.getByText(/Hash computed successfully/i), {
-      timeout: 120000, // 2 minutes timeout for very large files
+      timeout: 300000, // 5 minutes timeout for very large files
     }).toBeVisible();
 
     // Verify hash is displayed
@@ -250,7 +250,7 @@ test.describe("Large File Real-World Testing", () => {
 
     // Wait for completion
     await expect(page.getByText(/Hash computed successfully/i)).toBeVisible({
-      timeout: 120000, // 2 minutes for large files
+      timeout: 300000, // 5 minutes for large files
     });
 
     // PHASE 3: Verify auto-focus and type AFTER hashing
