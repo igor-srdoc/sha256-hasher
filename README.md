@@ -52,18 +52,23 @@ pnpm preview
 ## Screenshots
 
 ### Main Screen - File Upload
+
 ![Main Screen](screenshots/01-main-screen.png)
 
 ### File Selected with Information
+
 ![File Selected](screenshots/02-file-selected.png)
 
 ### Description Input
+
 ![With Description](screenshots/03-with-description.png)
 
 ### Hashing in Progress
+
 ![Hashing Progress](screenshots/04-hashing-progress.png)
 
 ### Results Page
+
 ![Result Page](screenshots/05-result-page.png)
 
 ## Demo Video
@@ -73,6 +78,7 @@ Watch the **complete continuous typing workflow with a 775MB file**:
 **[📹 Large File Continuous Typing Demo](e2e-videos/large-file-supports-continuous-typing-workflow-before-during-after.webm)** (308KB video)
 
 This E2E test demonstrates:
+
 - ✅ Typing description **before** hashing starts
 - ✅ Typing description **during** computation (while monitoring progress)
 - ✅ **Auto-focus** on results page
@@ -193,4 +199,3 @@ src/
 ## License
 
 MIT
-
