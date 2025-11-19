@@ -3,7 +3,10 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@ui/button";
 import { Textarea } from "@ui/textarea";
 import { Label } from "@ui/label";
-import { useHashWidgetStore, useHashWidgetActions } from "../state/hash-widget.context";
+import {
+  useHashWidgetStore,
+  useHashWidgetActions,
+} from "../state/hash-widget.context";
 import { formatBytes } from "../utils/format-bytes";
 import { MESSAGES, MAX_DESCRIPTION_LENGTH } from "../hash-computation.const";
 
@@ -11,23 +14,22 @@ export function ResultsDisplay() {
   const result = useHashWidgetStore((state) => state.result);
   const status = useHashWidgetStore((state) => state.status);
   const description = useHashWidgetStore((state) => state.description);
-  const descriptionWasFocused = useHashWidgetStore((state) => state.descriptionWasFocused);
   const { reset, setDescription } = useHashWidgetActions();
   const [copied, setCopied] = useState(false);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
-  // Only show when completed
-  if (status !== "completed" || !result) return null;
-
-  // Auto-focus description field if user was typing when computation completed
+  // Auto-focus description field when results are displayed
   useEffect(() => {
-    if (descriptionWasFocused && descriptionRef.current) {
+    if (status === "completed" && descriptionRef.current) {
       descriptionRef.current.focus();
       // Move cursor to end of text
       const length = descriptionRef.current.value.length;
       descriptionRef.current.setSelectionRange(length, length);
     }
-  }, [descriptionWasFocused]);
+  }, [status]);
+
+  // Only show when completed
+  if (status !== "completed" || !result) return null;
 
   const handleCopy = async () => {
     try {
@@ -100,9 +102,7 @@ export function ResultsDisplay() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="result-description">
-              Description (Optional)
-            </Label>
+            <Label htmlFor="result-description">Description (Optional)</Label>
             <Textarea
               id="result-description"
               ref={descriptionRef}
@@ -129,4 +129,3 @@ export function ResultsDisplay() {
     </div>
   );
 }
-
