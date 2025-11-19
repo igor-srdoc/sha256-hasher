@@ -2363,8 +2363,6 @@ Including:
 
 ---
 
-# Architecture Refactoring - Isolated Widget Pattern Summary
-
 ## Summary
 
 Identified and fixed a critical architectural flaw where the global Zustand store prevented multiple widget instances. Designed and implemented the "Isolated Zustand Instance Pattern" - a novel approach combining Zustand's vanilla store factory with internal React Context to create truly reusable widgets with isolated state, similar to React Context but without requiring developers to manually wrap components with providers.
@@ -2372,6 +2370,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 ## Key Skills Demonstrated
 
 **Advanced Architecture & Design Patterns**:
+
 - Identified fundamental architectural limitation (global state collision)
 - Designed novel "Isolated Zustand Instance Pattern" combining multiple paradigms
 - Zustand vanilla store factory for instance creation
@@ -2380,6 +2379,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - Closure-based state isolation
 
 **React Patterns & Best Practices**:
+
 - Custom hooks with useRef for stable references
 - Context API for internal component communication
 - Component composition and reusability
@@ -2387,6 +2387,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - Proper hook dependency management
 
 **State Management Mastery**:
+
 - Zustand store factory (`createStore` from `zustand/vanilla`)
 - Global vs isolated state understanding
 - Store instance lifecycle management
@@ -2394,6 +2395,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - Type-safe state updates
 
 **Code Organization & Refactoring**:
+
 - Large-scale folder restructuring (widget consolidation)
 - Module reorganization without breaking functionality
 - Import path updates across multiple files
@@ -2401,6 +2403,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - Feature-based folder structure
 
 **Problem Analysis**:
+
 - Root cause identification (shared worker instances)
 - Multi-widget scenario planning
 - Worker reference lifecycle analysis
@@ -2408,6 +2411,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - Architectural trade-off evaluation
 
 **Technical Writing & Documentation**:
+
 - Comprehensive README explaining pattern
 - Architecture diagrams and code examples
 - Comparison with alternative approaches
@@ -2415,6 +2419,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - Pattern benefits and trade-offs
 
 **System Thinking**:
+
 - Designed for multiple instances on same page
 - Each widget maintains isolated state + worker
 - Zero configuration required from consumers
@@ -2424,6 +2429,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 ## Outcome
 
 **Architectural Achievements**:
+
 - ✅ Fixed critical worker lifecycle bug (worker reference sharing)
 - ✅ Enabled multiple independent widget instances on one page
 - ✅ Zero consumer configuration (no manual Provider wrapping)
@@ -2432,6 +2438,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - ✅ Clean, scalable architecture
 
 **Pattern Innovation**:
+
 - Created "Isolated Zustand Instance Pattern"
 - Combines Zustand vanilla + React Context elegantly
 - Provider internally wraps widget components
@@ -2440,6 +2447,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - Reusable pattern applicable to other widgets
 
 **Code Quality Improvements**:
+
 - Consolidated all widget code into `widgets/hash-widget/`
 - Organized state files into dedicated `state/` folder
 - Cleaner component hierarchy (Layout → Page → Widget)
@@ -2447,6 +2455,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - More maintainable codebase
 
 **Technical Correctness**:
+
 - Each widget has own `createHashStore()` instance
 - Worker encapsulated in store closure
 - Cancel button now terminates correct worker
@@ -2454,6 +2463,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - No global state pollution
 
 **Documentation**:
+
 - 6KB+ comprehensive widget README
 - Architecture explanation with code examples
 - Usage patterns and testing strategies
@@ -2461,6 +2471,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - Complete implementation guide
 
 **Developer Experience**:
+
 - Simple API: `<HashWidget />` - just import and use
 - No configuration required
 - Type-safe throughout
@@ -2468,6 +2479,7 @@ Identified and fixed a critical architectural flaw where the global Zustand stor
 - Scales effortlessly
 
 **Real-World Impact**:
+
 - Can now have multiple hash widgets on dashboard
 - Each operates independently
 - No state collisions

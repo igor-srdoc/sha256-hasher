@@ -9,6 +9,7 @@ export const useHashState = create<HashState>((set) => ({
   error: null,
   result: null,
   description: "",
+  descriptionWasFocused: false,
 
   // Actions
   setFile: (file) =>
@@ -21,6 +22,8 @@ export const useHashState = create<HashState>((set) => ({
     }),
 
   setDescription: (description) => set({ description }),
+
+  setDescriptionFocused: (focused) => set({ descriptionWasFocused: focused }),
 
   setStatus: (status) => set({ status }),
 
@@ -49,6 +52,7 @@ export const useHashState = create<HashState>((set) => ({
       error: null,
       result: null,
       description: "",
+      descriptionWasFocused: false,
     }),
 
   cancel: () =>
