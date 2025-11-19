@@ -94,6 +94,74 @@ async function captureScreenshots() {
     fullPage: true,
   });
 
+  // 7. Capture error state
+  console.log("Capturing error state...");
+  
+  // Go back to home
+  await page.goto("http://localhost:5173");
+  await page.waitForLoadState("networkidle");
+
+  // Inject Worker override to trigger error
+  await page.evaluate(() => {
+    const OriginalWorker = window.Worker;
+    (window as any).Worker = class extends OriginalWorker {
+      constructor(scriptURL: string | URL, options?: WorkerOptions) {
+        super(scriptURL, options);
+        const originalPostMessage = this.postMessage.bind(this);
+        let messageCount = 0;
+
+        this.postMessage = function (message: any) {
+          originalPostMessage(message);
+          messageCount++;
+          if (messageCount === 1) {
+            setTimeout(() => {
+              this.dispatchEvent(
+                new MessageEvent("message", {
+                  data: {
+                    type: "ERROR",
+                    error: "Unable to process file: Insufficient memory available for large file computation",
+                  },
+                })
+              );
+            }, 800);
+          }
+        };
+      }
+    };
+  });
+
+  // Select file and trigger error
+  const errorTestContent = "Error test content";
+  const errorFileChooserPromise = page.waitForEvent("filechooser");
+  await page.getByText(/Drop file here or click to select/i).click();
+  const errorFileChooser = await errorFileChooserPromise;
+  await errorFileChooser.setFiles({
+    name: "large-document.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from(errorTestContent),
+  });
+
+  // Start computation to trigger error
+  await page.getByRole("button", { name: /Compute SHA256 Hash/i }).click();
+  
+  // Wait for error to appear
+  await page.waitForSelector('text=/Error/i', { timeout: 10000 });
+  await page.waitForTimeout(500);
+
+  // Scroll to make sure error is visible
+  await page.evaluate(() => {
+    const errorElement = document.querySelector('[class*="blue-50"]');
+    if (errorElement) {
+      errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+  await page.waitForTimeout(500);
+
+  await page.screenshot({
+    path: path.join(screenshotsDir, "07-error-state.png"),
+    fullPage: false,
+  });
+
   console.log("✅ All screenshots captured successfully!");
   console.log(`Screenshots saved to: ${screenshotsDir}`);
 

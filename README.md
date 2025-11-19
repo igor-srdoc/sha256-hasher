@@ -71,6 +71,12 @@ pnpm preview
 
 ![Result Page](screenshots/05-result-page.png)
 
+### Error Handling
+
+![Error State](screenshots/07-error-state.png)
+
+When an error occurs during hash computation, the application displays a clear error message with a "Try Again" button that resets the application to its initial state, allowing users to retry with a different file.
+
 ## Demo Video
 
 Watch the **complete continuous typing workflow with a 775MB file**:
