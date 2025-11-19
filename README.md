@@ -49,30 +49,66 @@ pnpm build
 pnpm preview
 ```
 
+## Screenshots
+
+### Main Screen - File Upload
+![Main Screen](screenshots/01-main-screen.png)
+
+### File Selected with Information
+![File Selected](screenshots/02-file-selected.png)
+
+### Description Input
+![With Description](screenshots/03-with-description.png)
+
+### Hashing in Progress
+![Hashing Progress](screenshots/04-hashing-progress.png)
+
+### Results Page
+![Result Page](screenshots/05-result-page.png)
+
+## Demo Video
+
+Watch the **complete continuous typing workflow with a 775MB file**:
+
+**[📹 Large File Continuous Typing Demo](e2e-videos/large-file-supports-continuous-typing-workflow-before-during-after.webm)** (308KB video)
+
+This E2E test demonstrates:
+- ✅ Typing description **before** hashing starts
+- ✅ Typing description **during** computation (while monitoring progress)
+- ✅ **Auto-focus** on results page
+- ✅ Typing description **after** completion
+- ✅ Real-world large file (775MB video)
+- ✅ No worker crashes or UI hangs
+
 ## Testing
 
-### Run All Tests
+### Unit & Integration Tests
 
 ```bash
+# Run all unit tests
 pnpm test
-```
 
-### Run Tests with UI
-
-```bash
+# Run tests with UI
 pnpm test:ui
-```
 
-### Run E2E Tests
-
-```bash
-pnpm test:e2e
-```
-
-### Coverage
-
-```bash
+# Run tests with coverage
 pnpm test:coverage
+```
+
+### E2E Tests
+
+```bash
+# Run E2E tests (no video recording - faster)
+pnpm test:e2e
+
+# Run E2E tests with video recording
+pnpm test:e2e:video
+
+# Run E2E tests without video recording
+pnpm test:e2e:no-video
+
+# Run E2E tests with Playwright UI
+pnpm test:e2e:ui
 ```
 
 ## How It Works
