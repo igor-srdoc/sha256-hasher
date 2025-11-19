@@ -165,35 +165,64 @@ ResultsDisplay
 ```
 src/
 ├── app/
-│   ├── app.tsx              # Root component
+│   ├── app.tsx                       # Root component
+│   ├── layout/
+│   │   └── layout.tsx                # Shared layout component
 │   ├── theme/
-│   │   └── theme.css        # Tailwind CSS
+│   │   └── theme.css                 # Tailwind CSS
+│   ├── test/
+│   │   └── setup.ts                  # Test setup
 │   └── utils/
-│       └── cn.ts            # Utility functions
+│       └── cn.ts                     # Utility functions
 ├── features/
 │   └── hash-computation/
-│       ├── hash-computation.page.tsx
-│       ├── hash-computation.const.ts
-│       ├── state/
-│       │   └── hash.state.ts        # Zustand store
-│       ├── hooks/
-│       │   └── use-hash-worker.ts   # Worker hook
-│       ├── workers/
-│       │   └── hash.worker.ts       # SHA256 Web Worker
-│       ├── utils/
-│       │   ├── format-bytes.ts
-│       │   └── validate-file.ts
-│       └── ui/
-│           ├── file-uploader.tsx
-│           ├── description-input.tsx
-│           ├── compute-button.tsx
-│           ├── progress-bar.tsx
-│           ├── results-display.tsx
-│           └── error-display.tsx
-├── ui/                      # Shared UI components
-├── test/
-│   └── setup.ts            # Test setup
-└── main.tsx                # Entry point
+│       ├── hash-computation.page.tsx # Page component
+│       └── widgets/
+│           └── hash-widget/          # Reusable hash widget
+│               ├── hash-widget.tsx   # Widget entry point
+│               ├── hash-computation.const.ts
+│               ├── hash-computation.types.ts
+│               ├── state/
+│               │   ├── hash.state.ts            # Legacy global store
+│               │   ├── hash-widget.store.ts     # Store factory
+│               │   └── hash-widget.context.tsx  # Internal context
+│               ├── hooks/
+│               │   └── use-hash-worker.ts       # Worker hook
+│               ├── workers/
+│               │   ├── hash.worker.ts           # SHA256 Web Worker
+│               │   └── hash.worker.types.ts
+│               ├── utils/
+│               │   ├── format-bytes.ts
+│               │   ├── format-bytes.test.ts
+│               │   ├── validate-file.ts
+│               │   └── validate-file.test.ts
+│               └── ui/
+│                   ├── file-uploader.tsx
+│                   ├── description-input.tsx
+│                   ├── compute-button.tsx
+│                   ├── cancel-button.tsx
+│                   ├── progress-bar.tsx
+│                   ├── results-display.tsx
+│                   └── error-display.tsx
+├── ui/                               # Shared UI components
+│   ├── button.tsx
+│   ├── textarea.tsx
+│   ├── label.tsx
+│   └── progress.tsx
+└── main.tsx                          # Entry point
+
+tests/                                # All test-related files
+├── e2e/                              # E2E test specs
+│   ├── hash-computation.spec.ts
+│   ├── error-handling.spec.ts
+│   ├── large-file.spec.ts
+│   └── mock/                         # Large test files
+├── e2e-videos/                       # Demo videos (18 videos)
+├── screenshots/                      # App screenshots (7 images)
+├── scripts/
+│   └── capture-screenshots.ts        # Screenshot automation
+├── playwright-report/                # Test reports
+└── test-results/                     # Playwright test results
 ```
 
 ## Documentation
