@@ -1217,11 +1217,13 @@ Test Results: All 14 E2E tests passing ✅
 **Features Added**:
 
 1. **Editable Description on Results Page**
+
    - Description field is now a `<textarea>` on the results page
    - Users can edit the description even after hash computation
    - Character limit (500 chars) enforced with counter
 
 2. **Auto-Focus on Completion**
+
    - If user was typing in description when hash completed → field auto-focuses
    - Cursor positioned at end of text for seamless continuation
    - Typing flow uninterrupted across computation states
@@ -1234,12 +1236,14 @@ Test Results: All 14 E2E tests passing ✅
 **Implementation Details**:
 
 **Files Modified**:
+
 1. `hash-computation.types.ts` - Added `descriptionWasFocused` state and `setDescriptionFocused` action
 2. `hash-widget.store.ts` - Implemented focus tracking in store
 3. `description-input.tsx` - Added `onFocus`/`onBlur` handlers
 4. `results-display.tsx` - Replaced static text with editable `<Textarea>`, added auto-focus logic
 
 **Auto-Focus Logic**:
+
 ```typescript
 useEffect(() => {
   if (descriptionWasFocused && descriptionRef.current) {
@@ -1251,6 +1255,7 @@ useEffect(() => {
 ```
 
 **User Experience**:
+
 - Before: Description shown as read-only text, had to click "Compute Another Hash" to change it
 - After: Description fully editable on results page ✨, focus maintained if typing during hash
 
@@ -1261,7 +1266,7 @@ useEffect(() => {
 **Prompt**:
 
 > this happens at the end of the hashing
-> 
+>
 > [Screenshot showing: "Uncaught Error: Rendered more hooks than during the previous render... at ResultsDisplay"]
 
 **Response**:
@@ -1269,6 +1274,7 @@ useEffect(() => {
 Found and fixed! The problem was a **Rules of Hooks violation** on line 25 of `results-display.tsx`.
 
 **What was wrong**:
+
 - Early `return null` happened BEFORE the `useEffect` hook
 - First render (status !== "completed"): Returns `null`, no `useEffect` called
 - Second render (status === "completed"): Suddenly `useEffect` is called
@@ -1279,14 +1285,14 @@ Found and fixed! The problem was a **Rules of Hooks violation** on line 25 of `r
 ```typescript
 export function ResultsDisplay() {
   // All hooks here (useHashWidgetStore, useState, useRef, useEffect)
-  
+
   useEffect(() => {
     // Auto-focus logic
   }, [descriptionWasFocused]);
 
   // NOW the early return (after all hooks)
   if (status !== "completed" || !result) return null;
-  
+
   // Rest of component
 }
 ```
@@ -1308,12 +1314,14 @@ Test Results: Error resolved, app works correctly ✅
 ✅ **Done!** Updated auto-focus logic to always focus the description field when the success screen appears.
 
 **Changes**:
+
 - Changed auto-focus trigger from `descriptionWasFocused` to `status === "completed"`
 - Description field now focuses whenever results are displayed
 - Cursor positioned at end of any existing text
 - Removed unused `descriptionWasFocused` variable from results-display.tsx
 
 **Updated Auto-Focus Logic**:
+
 ```typescript
 useEffect(() => {
   if (status === "completed" && descriptionRef.current) {
@@ -1326,6 +1334,7 @@ useEffect(() => {
 ```
 
 **User Experience**:
+
 - Description field automatically receives focus when results appear
 - User can immediately start typing without clicking
 - Seamless workflow for adding/editing descriptions
@@ -1347,6 +1356,7 @@ Successfully fixed React hooks violation and updated all E2E tests!
 **New Comprehensive Test Added**:
 
 **"supports continuous typing workflow: before, during, and after hashing"**
+
 - ✅ PHASE 1: Types "Before hashing: " → verifies initial text → starts computation
 - ✅ PHASE 2: Types "during hashing: " → while computing → verifies text updated
 - ✅ PHASE 3: Types "after hashing!" → on results page (auto-focused) → verifies final text
@@ -1355,18 +1365,21 @@ Successfully fixed React hooks violation and updated all E2E tests!
 - ✅ Validates description persists through all states
 
 **4 Existing Tests Updated**:
+
 1. **"allows adding description before computation"** - Now verifies textarea value and auto-focus
 2. **"UI remains responsive during computation"** - Updated to check textarea value instead of text
 3. **"allows typing description during computation"** - Updated to check textarea value
 4. **"allows multiple description edits during computation"** - Maintained existing behavior
 
 **Test Assertions Updated**:
+
 - Changed from `getByText(description)` to `getByRole("textbox", { name: /Description/i })`
 - Added `.toHaveValue()` checks for textarea content
 - Added `.toBeFocused()` checks to verify auto-focus behavior
 - All tests verify editable textarea instead of read-only text
 
 **Test Results**:
+
 ```
 ✅ 15/15 E2E tests passing
 ✅ All description tests verify textarea behavior
@@ -1375,6 +1388,7 @@ Successfully fixed React hooks violation and updated all E2E tests!
 ```
 
 **Key Features Tested**:
+
 - ✨ Type before computation → persists
 - ✨ Type during computation → doesn't break hash
 - ✨ Auto-focus on results page → seamless continuation
@@ -1382,11 +1396,13 @@ Successfully fixed React hooks violation and updated all E2E tests!
 - ✨ Character limit enforced → 500 chars max
 
 **User Experience Validated**:
+
 - Description field auto-focuses when results appear
 - Cursor positioned at end of text for seamless typing
 - Editable on results page with character counter
 - Seamless typing across all application states
 
 Commits:
+
 1. `feat: Make description editable on results page with auto-focus`
 2. `fix: Auto-focus description field on results page + update tests`

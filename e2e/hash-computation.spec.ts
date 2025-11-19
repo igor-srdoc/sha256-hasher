@@ -107,7 +107,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     }).toBeVisible();
 
     // Verify description is shown in results textarea and is editable
-    const resultDescriptionField = page.getByRole("textbox", { name: /Description/i });
+    const resultDescriptionField = page.getByRole("textbox", {
+      name: /Description/i,
+    });
     await expect(resultDescriptionField).toBeVisible();
     await expect(resultDescriptionField).toHaveValue(description);
     await expect(resultDescriptionField).toBeFocused(); // Should be auto-focused
@@ -197,7 +199,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     }).toBeVisible();
 
     // Verify the description was saved and is displayed in results textarea
-    const resultDescriptionField = page.getByRole("textbox", { name: /Description/i });
+    const resultDescriptionField = page.getByRole("textbox", {
+      name: /Description/i,
+    });
     await expect(resultDescriptionField).toHaveValue("Initial description");
 
     // UI remains responsive - can click "Compute Another Hash"
@@ -209,7 +213,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     ).toBeVisible();
   });
 
-  test("allows typing description during computation without breaking hash", async ({ page }) => {
+  test("allows typing description during computation without breaking hash", async ({
+    page,
+  }) => {
     // Create a 5MB file to have enough time to type during computation
     const largeContent = "X".repeat(5 * 1024 * 1024); // 5MB
     const fileChooserPromise = page.waitForEvent("filechooser");
@@ -245,11 +251,15 @@ test.describe("SHA256 Hash Computation E2E", () => {
     expect(hashText?.length).toBe(64);
 
     // Verify the description typed during hashing was saved in the editable textarea
-    const resultDescriptionField = page.getByRole("textbox", { name: /Description/i });
+    const resultDescriptionField = page.getByRole("textbox", {
+      name: /Description/i,
+    });
     await expect(resultDescriptionField).toHaveValue("Typed during hashing");
   });
 
-  test("allows multiple description edits during computation", async ({ page }) => {
+  test("allows multiple description edits during computation", async ({
+    page,
+  }) => {
     // Create a 10MB file to ensure we have enough time to type multiple edits
     const largeContent = "Y".repeat(10 * 1024 * 1024); // 10MB
     const fileChooserPromise = page.waitForEvent("filechooser");
@@ -326,7 +336,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     expect(fontFamily.toLowerCase()).toMatch(/mono|courier|consolas/);
   });
 
-  test("supports continuous typing workflow: before, during, and after hashing", async ({ page }) => {
+  test("supports continuous typing workflow: before, during, and after hashing", async ({
+    page,
+  }) => {
     // Create a 5MB file to have enough time to type during computation
     const largeContent = "Z".repeat(5 * 1024 * 1024); // 5MB
     const fileChooserPromise = page.waitForEvent("filechooser");
@@ -343,7 +355,7 @@ test.describe("SHA256 Hash Computation E2E", () => {
     // PHASE 1: Type BEFORE starting hash
     const descriptionField = page.getByPlaceholder(/Add a description/i);
     await descriptionField.fill("Before hashing: ");
-    
+
     // Verify initial text
     await expect(descriptionField).toHaveValue("Before hashing: ");
 
@@ -355,7 +367,9 @@ test.describe("SHA256 Hash Computation E2E", () => {
     await descriptionField.fill("Before hashing: during hashing: ");
 
     // Verify text was updated during computation
-    await expect(descriptionField).toHaveValue("Before hashing: during hashing: ");
+    await expect(descriptionField).toHaveValue(
+      "Before hashing: during hashing: "
+    );
 
     // Wait for completion
     await expect(page.getByText(/Hash computed successfully/i), {
@@ -364,14 +378,20 @@ test.describe("SHA256 Hash Computation E2E", () => {
 
     // PHASE 3: Description field should be auto-focused on results page
     // Type AFTER hashing (append to existing text)
-    const resultDescriptionField = page.getByRole("textbox", { name: /Description/i });
+    const resultDescriptionField = page.getByRole("textbox", {
+      name: /Description/i,
+    });
     await expect(resultDescriptionField).toBeFocused();
-    
+
     // Continue typing seamlessly
-    await resultDescriptionField.fill("Before hashing: during hashing: after hashing!");
+    await resultDescriptionField.fill(
+      "Before hashing: during hashing: after hashing!"
+    );
 
     // Verify final text includes all phases
-    await expect(resultDescriptionField).toHaveValue("Before hashing: during hashing: after hashing!");
+    await expect(resultDescriptionField).toHaveValue(
+      "Before hashing: during hashing: after hashing!"
+    );
 
     // Verify hash was computed successfully
     const hashElement = page.locator("code").first();

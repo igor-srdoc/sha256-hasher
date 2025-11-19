@@ -32,3 +32,6 @@ coverage
 test-results
 playwright-report
 
+# E2E videos (keep these for demonstration)
+# e2e-videos/ folder is tracked to showcase test execution
+
