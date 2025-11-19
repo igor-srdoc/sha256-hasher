@@ -2,6 +2,12 @@
 
 A TypeScript React application that calculates SHA256 hashes for files up to 10GB with a non-blocking UI.
 
+## Live Demo
+
+🚀 **[https://sha256-hasher.vercel.app/](https://sha256-hasher.vercel.app/)**
+
+Try the application live! Upload any file (up to 10GB) and compute its SHA256 hash directly in your browser.
+
 ## Features
 
 - ✅ SHA256 hash calculation for files up to 10GB
