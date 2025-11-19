@@ -24,14 +24,16 @@ dist-ssr
 *.sw?
 
 # E2E test mock files (large files for testing)
-e2e/mock/*
-!e2e/mock/.gitkeep
+tests/e2e/mock/*
+!tests/e2e/mock/.gitkeep
 
 # Test
 coverage
 test-results
 playwright-report
+tests/test-results
+tests/playwright-report
 
 # E2E videos (keep these for demonstration)
-# e2e-videos/ folder is tracked to showcase test execution
+# tests/e2e-videos/ folder is tracked to showcase test execution
 

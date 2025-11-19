@@ -96,7 +96,7 @@ async function captureScreenshots() {
 
   // 7. Capture error state
   console.log("Capturing error state...");
-  
+
   // Go back to home
   await page.goto("http://localhost:5173");
   await page.waitForLoadState("networkidle");
@@ -143,7 +143,7 @@ async function captureScreenshots() {
 
   // Start computation to trigger error
   await page.getByRole("button", { name: /Compute SHA256 Hash/i }).click();
-  
+
   // Wait for error to appear
   await page.waitForSelector('text=/Error/i', { timeout: 10000 });
   await page.waitForTimeout(500);

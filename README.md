@@ -53,27 +53,27 @@ pnpm preview
 
 ### Main Screen - File Upload
 
-![Main Screen](screenshots/01-main-screen.png)
+![Main Screen](tests/screenshots/01-main-screen.png)
 
 ### File Selected with Information
 
-![File Selected](screenshots/02-file-selected.png)
+![File Selected](tests/screenshots/02-file-selected.png)
 
 ### Description Input
 
-![With Description](screenshots/03-with-description.png)
+![With Description](tests/screenshots/03-with-description.png)
 
 ### Hashing in Progress
 
-![Hashing Progress](screenshots/04-hashing-progress.png)
+![Hashing Progress](tests/screenshots/04-hashing-progress.png)
 
 ### Results Page
 
-![Result Page](screenshots/05-result-page.png)
+![Result Page](tests/screenshots/05-result-page.png)
 
 ### Error Handling
 
-![Error State](screenshots/07-error-state.png)
+![Error State](tests/screenshots/07-error-state.png)
 
 When an error occurs during hash computation, the application displays a clear error message with a "Try Again" button that resets the application to its initial state, allowing users to retry with a different file.
 
@@ -81,7 +81,7 @@ When an error occurs during hash computation, the application displays a clear e
 
 Watch the **complete continuous typing workflow with a 775MB file**:
 
-**[📹 Large File Continuous Typing Demo](e2e-videos/large-file-supports-continuous-typing-workflow-before-during-after.webm)** (308KB video)
+**[📹 Large File Continuous Typing Demo](tests/e2e-videos/large-file-supports-continuous-typing-workflow-before-during-after.webm)** (308KB video)
 
 This E2E test demonstrates:
 

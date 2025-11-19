@@ -1479,6 +1479,7 @@ Videos are now generated automatically on every E2E test run!
 **Problem**:
 
 Playwright test results were saved in deep folder structures like:
+
 - `test-results/hash-computation-allows-adding-description-before-computation-chromium/video.webm`
 
 When manually copying videos to `e2e-videos/` folder, the first character was getting lost.
@@ -1486,6 +1487,7 @@ When manually copying videos to `e2e-videos/` folder, the first character was ge
 **Solution**:
 
 Created automated script to:
+
 1. Parse Playwright test results
 2. Extract full test names correctly
 3. Rename and copy videos with complete filenames
@@ -1503,6 +1505,7 @@ Created automated script to:
 **Result**:
 
 All 15 videos now have correct full names:
+
 - ✅ `allows-adding-description-before-computation.webm`
 - ✅ `allows-canceling-computation.webm`
 - ✅ `allows-multiple-description-edits-during-computation.webm`
@@ -1534,11 +1537,13 @@ No more truncated filenames! Each video clearly identifies its test case.
 **Workflow Tested**:
 
 1. **PHASE 1 - Before Hashing**:
+
    - Types: "Large file test: typing before - "
    - Selects 775MB file
    - Verifies description persisted
 
 2. **PHASE 2 - During Hashing**:
+
    - Clicks Compute Hash
    - Waits for progress to start
    - Types: "during hashing - " (while processing)
@@ -1575,6 +1580,7 @@ No more truncated filenames! Each video clearly identifies its test case.
 ```
 
 This test combines:
+
 - ✅ Real-world large file handling
 - ✅ Continuous user input workflow
 - ✅ Auto-focus functionality
@@ -1630,6 +1636,7 @@ All saved in `screenshots/` folder and tracked in git.
 **New Sections Added**:
 
 **"Screenshots"** - Visual walkthrough of all app screens:
+
 - Main screen with drag & drop zone
 - File selection with size info
 - Description input
@@ -1637,6 +1644,7 @@ All saved in `screenshots/` folder and tracked in git.
 - Results page with editable description
 
 **"Demo Video"** - Embedded video link:
+
 - **Featured**: `large-file-supports-continuous-typing-workflow-before-during-after.webm`
 - **Size**: 308KB
 - **Content**: Complete workflow with 775MB file
@@ -1645,6 +1653,7 @@ All saved in `screenshots/` folder and tracked in git.
 - 2-minute demo of real-world usage
 
 **"Testing"** - Updated to include new scripts:
+
 ```bash
 pnpm test              # Unit tests
 pnpm test:e2e:video    # E2E tests WITH video
@@ -1682,6 +1691,7 @@ pnpm test:e2e:no-video # E2E tests WITHOUT video
 ### Test 1: "displays error message and allows retry when hash computation fails"
 
 **Workflow**:
+
 1. Select file and add description
 2. **Inject Worker error** using `page.evaluate()` to override `Worker` constructor
 3. Start computation → worker immediately sends ERROR message
@@ -1697,6 +1707,7 @@ pnpm test:e2e:no-video # E2E tests WITHOUT video
 ### Test 2: "resets to initial state after error"
 
 **Workflow**:
+
 1. Select file and add description
 2. **Inject network error** simulation
 3. Start computation → error triggered
@@ -1710,6 +1721,7 @@ pnpm test:e2e:no-video # E2E tests WITHOUT video
 **Technical Implementation**:
 
 Used `page.evaluate()` to inject error simulation:
+
 ```typescript
 await page.evaluate(() => {
   const OriginalWorker = window.Worker;
@@ -1721,8 +1733,8 @@ await page.evaluate(() => {
           new MessageEvent("message", {
             data: {
               type: "ERROR",
-              error: "Unable to process file: Insufficient memory..."
-            }
+              error: "Unable to process file: Insufficient memory...",
+            },
           })
         );
       }, 100);
@@ -1779,6 +1791,7 @@ Error message in video was at bottom of screen, making it hard to see clearly.
 **Solution**:
 
 1. **Enhanced screenshot script** (`scripts/capture-screenshots.ts`):
+
    - Added error state capture
    - Worker override injection to trigger realistic error
    - Scroll to center error message in viewport
@@ -1787,6 +1800,7 @@ Error message in video was at bottom of screen, making it hard to see clearly.
 2. **New Screenshot**: `screenshots/07-error-state.png` (68KB)
 
 Shows:
+
 - ✅ Error message clearly visible (centered)
 - ✅ Blue error panel with alert icon
 - ✅ Descriptive error: "Unable to process file: Insufficient memory available for large file computation"
@@ -1799,6 +1813,7 @@ Shows:
 
 ```markdown
 ### Error Handling
+
 ![Error State](screenshots/07-error-state.png)
 
 When an error occurs during hash computation, the application displays
